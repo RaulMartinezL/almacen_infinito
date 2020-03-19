@@ -16,7 +16,7 @@ class Arena:
 
     def __create_free_pool(self):
         """
-        crea un pool nuevo vacío y lo añade a self.__free_pools .
+        crea un pool nuevo vacio y lo inserta a self.__free_pools .
         :return: nothing.
         """
         self.__free_pools.append(pale.Pool(self.__size_pools))
@@ -25,21 +25,21 @@ class Arena:
         """
         devuelve el size class idx correpondiente a param size.
 
-        :param size: entero que indica el tamaño de un block, en bytes.
+        :param size: entero que indica el size de un block, en bytes.
         :return: entero (0,1,2 o 3 ...) que corresponde al size class idx.
         """
         for i in range(0, len(self.__blocks_size)):
             if size / self.__blocks_size[i] <= 1:
                 return i
 
-        # si llegamos aqui, quiere decir que no tenemos contemplado el class idx para el tamaño del paquete
+        # si llegamos aqui, quiere decir que no tenemos contemplado el class idx para el size del paquete
         # no deberiamos de llegar nunca
         return -1
 
     def __get_pool_idx(self, class_idx):
         """
-        devuelve un pool dónde los bloques son del tamaño class_idx y dónde hay bloques libres.
-        si no existe un pool así, comprueba que haya alguno free.
+        devuelve un pool donde los bloques son del size class_idx y donde hay bloques libres.
+        si no existe un pool asi, comprueba que haya alguno free.
         si no existe un pool free, crea un pool free.
 
         :param class_idx: entero (0,1,2 o 3 ...) que corresponde al size class idx del pool que queremos buscar.
@@ -47,16 +47,16 @@ class Arena:
         """
         if class_idx == -1:
             # chequear get_class_idx.
-            sys.exit('no existe class idx para el tamaño del paquete')
+            sys.exit('no existe class idx para el size del paquete')
 
-        # buscamos un pool usado, dónde el tamaño del bloque es suficiente para meter nuestro paquete
+        # buscamos un pool usado, donde el size del bloque es suficiente para meter nuestro paquete
         # y que tenga bloques libres.
         for i in range(0, len(self.__used_pools)):
             if self.__used_pools[i].get_pool_class_idx() == class_idx:
                 if self.__used_pools[i].is_not_full:
                     return self.__used_pools[i]
 
-        # si no existe, buscamos un pool free, dónde haremos que el tamaño de los bloques sea suficiente para
+        # si no existe, buscamos un pool free, donde haremos que el size de los bloques sea suficiente para
         # meter nuestro paquete.
         if len(self.__free_pools) > 0:
             aux_pool = self.__free_pools.pop()
@@ -64,7 +64,7 @@ class Arena:
             self.__used_pools.append(aux_pool)
             return aux_pool
 
-        # si no existen pools free, creamos un pool free y volvemos a llamar a esta misma función.
+        # si no existen pools free, creamos un pool free y volvemos a llamar a esta misma funcion.
         else:
             self.__create_free_pool()
             return self.__get_pool_idx(class_idx)
@@ -73,7 +73,7 @@ class Arena:
         """
         recorre la lista de pool los cuales tienen blocks (esta lista es self.__used_pools) hasta encontrar un pool
         donde class_idx sea la que estamos buscando.
-        si no es así quiere decir que no existe el paquete que estamos buscando.
+        si no es asi quiere decir que no existe el paquete que estamos buscando.
 
         :param package: data del paquete que estamos buscando.
         :param pool_idx: class_pool_idx de los pools donde estamos buscando el paquete.
@@ -81,7 +81,7 @@ class Arena:
         """
 
         if len(self.__used_pools) == 0:
-            sys.exit("para buscar paquete primero tienes que añadir al menos uno")
+            sys.exit("para buscar paquete primero tienes que meter al menos uno")
 
         for i in range(0, len(self.__used_pools)):
             package_to_return = self.__used_pools[i].get_package(hash_key_object, client_who_own)
@@ -92,12 +92,12 @@ class Arena:
 
     def __status_small_warehouse(self):
         """
-        imprimimos el estado del almacen pequeño
+        imprimimos el estado del almacen small
         :return: nada.
         """
 
-        print("Informacion del almacen pequeño: ")
-        print(f"En el almacen pequeño tenemos {len(self.__used_pools)} palés usados.")
+        print("Informacion del almacen small: ")
+        print(f"En el almacen small tenemos {len(self.__used_pools)} palés usados.")
         for i in range(0, len(self.__used_pools)):
             for j in range(0, len(self.__used_pools[i].allocated_blocks)):
                 print(self.__used_pools[i].allocated_blocks[j].get_data())

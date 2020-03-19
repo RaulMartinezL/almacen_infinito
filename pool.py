@@ -1,4 +1,5 @@
-import block as paquete
+import paquete as paquete
+
 
 
 class Pool:
