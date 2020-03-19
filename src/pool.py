@@ -1,5 +1,4 @@
-import paquete as paquete
-
+from src import paquete as paquete
 
 
 class Pool:

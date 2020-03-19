@@ -1,4 +1,4 @@
-import arena as almacen
+from src import arena as almacen
 import sys
 
 small_warehouse = almacen.Arena([8, 16, 24, 32])
@@ -102,3 +102,4 @@ if __name__ == "__main__":
     key_paquete22 = guardar_objeto(paquete22, client1)
 
     estado_almacenamiento()
+
