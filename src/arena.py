@@ -5,13 +5,14 @@ import sys
 class Arena:
     __blocks_size = []
 
-    __size_pools = 1024
+    __size_pools = 96
     __free_pools = []
     __used_pools = []
 
     def __init__(self, blocks_size):
 
-        self.__create_free_pool()
+        for i in range(0, 4):
+            self.__create_free_pool()
         self.__blocks_size = blocks_size
 
     def __create_free_pool(self):
@@ -81,7 +82,7 @@ class Arena:
         """
 
         if len(self.__used_pools) == 0:
-            sys.exit("para buscar paquete primero tienes que meter al menos uno")
+            sys.exit("para buscar paquetes primero tienes que meter al menos uno")
 
         for i in range(0, len(self.__used_pools)):
             package_to_return = self.__used_pools[i].get_package(hash_key_object, client_who_own)
