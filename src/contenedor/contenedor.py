@@ -1,11 +1,10 @@
-from src import pool as pale
+from src.contenedor import pale as pale
 import sys
 
 
 class Arena:
     __blocks_size = []
 
-    __size_pools = 96 # hjaj
     __free_pools = []
     __used_pools = []
 
@@ -20,7 +19,7 @@ class Arena:
         crea un pool nuevo vacio y lo inserta a self.__free_pools .
         :return: nothing.
         """
-        self.__free_pools.append(pale.Pool(self.__size_pools))
+        self.__free_pools.append(pale.Pool())
 
     def __get_class_idx(self, size):
         """
@@ -41,7 +40,6 @@ class Arena:
         """
         devuelve un pool donde los bloques son del size class_idx y donde hay bloques libres.
         si no existe un pool asi, comprueba que haya alguno free.
-        si no existe un pool free, crea un pool free.
 
         :param class_idx: entero (0,1,2 o 3 ...) que corresponde al size class idx del pool que queremos buscar.
         :return: un pool.
@@ -65,10 +63,8 @@ class Arena:
             self.__used_pools.append(aux_pool)
             return aux_pool
 
-        # si no existen pools free, creamos un pool free y volvemos a llamar a esta misma funcion.
-        else:
-            self.__create_free_pool()
-            return self.__get_pool_idx(class_idx)
+        return False
+
 
     def __fetch_package(self, hash_key_object, client_who_own):
         """
@@ -91,20 +87,19 @@ class Arena:
 
         return None
 
-    def __status_small_warehouse(self):
+    def status_small_warehouse(self):
         """
         imprimimos el estado del almacen small
         :return: nada.
         """
 
-        print("Informacion del almacen small: ")
-        print(f"En el almacen small tenemos {len(self.__used_pools)} palés usados.")
+        print(f"tenemos {len(self.__used_pools)} palés usados.")
         for i in range(0, len(self.__used_pools)):
             for j in range(0, len(self.__used_pools[i].allocated_blocks)):
                 print(self.__used_pools[i].allocated_blocks[j].get_data())
 
 
-    def __status_big_warehouse(self):
+    def status_big_warehouse(self):
         """
         imprimimos el estado del almacen grande
         :return: nada.
@@ -131,6 +126,23 @@ class Arena:
             if len(self.__used_pools[i].allocated_blocks) <= 0:
                 print(f"El almacen grande ha enviado todos los paquetes del palé {i+1}")
 
+
+    def is_not_full(self):
+        """
+        comprobamos que hay espacio disponible en los palés que contiene este contenedor.
+        :return: True si existe espacio disponible. False si no existe espacio disponible.
+        """
+
+        if len(self.__free_pools) > 0:
+            return True
+
+        for i in range(0, len(self.__used_pools)):
+            if self.__used_pools[i].is_not_full() is True:
+                return True
+
+        return False
+
+
     def add_package(self, package, client):
         """
         inserta un paquete en un block de un pool.
@@ -140,10 +152,13 @@ class Arena:
         :return: string con informacion.
         """
 
-        # chequeamos el tamaño del bloque que nos pasan
+        # chequeamos el tamaño del paquete que nos pasan
         size = sys.getsizeof(package)
         # obtenemos el pool, dónde los tamaños de los blocks son suficientes para nuestro paquete
         pool_where_insert = self.__get_pool_idx(self.__get_class_idx(size))
+
+        if pool_where_insert is False:
+            return False
 
         # insertamos el paquete en el pool correspondiente
         return pool_where_insert.insert_block(package, client)
@@ -170,15 +185,3 @@ class Arena:
             return "el paquete no está en este almacen"
         else:
             return package_to_return
-
-
-    def status(self):
-        """
-        Imprimimos por pantalla el estado del almacen.
-        :return: nada
-        """
-
-        if len(self.__blocks_size) <= 4:
-            self.__status_small_warehouse()
-        else:
-            self.__status_big_warehouse()

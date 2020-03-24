@@ -1,8 +1,10 @@
-from src import arena as almacen
+from src.almacenes import big_almacen as big_almacen
+from src.almacenes import small_almacen as small_almacen
 import sys
 
-small_warehouse = almacen.Arena([8, 16, 24, 32])
-big_warehouse = almacen.Arena([40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128, 136, 144, 152, 160])
+small_warehouse = small_almacen.Small_almacen()
+big_warehouse = big_almacen.Big_almacen()
+
 list_clients = []
 
 
@@ -19,9 +21,9 @@ def guardar_objeto(objeto, client):
     size_object = sys.getsizeof(objeto)
 
     if size_object <= 32:
-        return small_warehouse.add_package(objeto, client)
+        return small_warehouse.guardar_paquete(objeto, client)
     else:
-        return big_warehouse.add_package(objeto, client)
+        return big_warehouse.guardar_paquete(objeto, client)
 
 
 def recuperar_objeto(id_paquete, client):
@@ -91,7 +93,6 @@ if __name__ == "__main__":
     paquete2 = 'paquete2'
     paquete11 = 4
     paquete22 = 4.4
-
 
 
     alta_cliente(client1)

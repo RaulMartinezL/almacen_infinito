@@ -1,8 +1,9 @@
-from src import paquete as paquete
+from src.contenedor import paquete as paquete
 
 
 class Pool:
-    __pool_size = None
+
+    __pool_size = 96
     __block_size = None
     __class_idx = None
 
@@ -10,16 +11,17 @@ class Pool:
     __free_blocks = []
     __untouched_blocks = []
 
-    def __init__(self, pool_size):
-        self.__pool_size = pool_size
+    def __init__(self):
+        pass
+
 
     def get_block_size(self):
         return self.__block_size
 
     def is_not_full(self):
         """
-        suma la longitud de free_blocks y untouched_blocks. Si es mayor qué 0, quiere decir que hay bloques en los
-        que podemos insertar el paquete.
+        suma la longitud de free_blocks y untouched_blocks. Si es mayor que 0, quiere decir que hay bloques en los
+        que podemos insertar paquetes.
 
         :return: True si hay bloques libre. False si no hay bloques libres.
         """
