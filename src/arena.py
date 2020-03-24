@@ -12,7 +12,8 @@ class Arena:
     def __init__(self, blocks_size):
 
         for i in range(0, 4):
-            self.__blocks_size = blocks_size
+            self.__create_free_pool()
+        self.__blocks_size = blocks_size
 
     def __create_free_pool(self):
         """
