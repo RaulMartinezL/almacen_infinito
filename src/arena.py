@@ -5,7 +5,7 @@ import sys
 class Arena:
     __blocks_size = []
 
-    __size_pools = 96
+    __size_pools = 96 # hjaj
     __free_pools = []
     __used_pools = []
 
