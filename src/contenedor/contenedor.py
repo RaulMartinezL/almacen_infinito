@@ -3,6 +3,9 @@ import sys
 
 
 class Arena:
+    """
+    Contenedor es la clase equivalente a la Arena de python
+    """
     __blocks_size = []
 
     __free_pools = []
@@ -23,7 +26,7 @@ class Arena:
 
     def __get_class_idx(self, size):
         """
-        devuelve el size class idx correpondiente a param size.
+        devuelve el size class idx correpondiente a size.
 
         :param size: entero que indica el size de un block, en bytes.
         :return: entero (0,1,2 o 3 ...) que corresponde al size class idx.
