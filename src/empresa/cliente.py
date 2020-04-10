@@ -19,3 +19,9 @@ class Cliente:
         """
         return self.__id
 
+    def get_name(self):
+        """
+
+        :return:
+        """
+        return self.__name

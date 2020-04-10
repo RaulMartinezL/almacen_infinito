@@ -37,6 +37,12 @@ class Small_almacen:
         self.__create__container()
         return self.guardar_paquete(package, cliente)
 
+    def recuperar_paquete(self, id_paquete, cliente):
+        """
+
+        :return:
+        """
+        pass
 
     def status(self):
         """
@@ -44,12 +50,21 @@ class Small_almacen:
         :return:
         """
 
+        pools = self.__used_containers[0].get_pools()
 
-        print("Informacion del almacen pqueño: ")
-        print(f"En el almacen pequeño tenemos {len(self.__used_containers)} contenedores usados, en los cuales: ")
+
+        for i in range(0, len(pools)):
+            print(pools[i].allocated_blocks[0].get_data())
+
+
+        print("Informacion del almacen pequeño: ")
+        print(f"En el almacen pequeño tenemos {len(self.__used_containers)} contenedores usados: ")
         for i in range(0, len(self.__used_containers)):
             print(f"En el contenedor {i+1}:")
             self.__used_containers[i].status_small_warehouse()
+
+
+
 
 
 

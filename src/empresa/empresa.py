@@ -1,5 +1,6 @@
 import sys
-from ..almacenes.almacen import AlmacenObjetosGrandes, AlmacenObjetosPequenos
+from ..almacenes.big_almacen import Big_almacen
+from ..almacenes.small_almacen import Small_almacen
 from ..contenedor.paquete import Block
 from .cliente import Cliente
 
@@ -15,12 +16,13 @@ class Empresa:
 
 
     def __init__(self):
-        self.__almacenGrande = AlmacenObjetosGrandes()
-        self.__almacenPequeno = AlmacenObjetosPequenos()
+        self.__almacenGrande = Big_almacen()
+        self.__almacenPequeno = Small_almacen()
 
     def guardar_objeto(self, objeto, client: Cliente):
         """
-        Guardamos el objeto en el lugar adecuado. Devuelve un identificador para poder recuperarlo.
+        Comprobamos que el cliente está en la base de datos. Guardamos el objeto en el lugar adecuado.
+         Devuelve un identificador para poder recuperarlo.
         :param objeto: objeto que vamos a guardar.
         :param cliente: cliente al que pertenece el objeto.
         :return: str. identificador unico del objeto.
@@ -31,18 +33,18 @@ class Empresa:
 
         if client.get_id() not in list_of_ids:
             return "el cliente no existe en el sistema."
+
+        size_object = sys.getsizeof(objeto)
+
+        if size_object <= 32:
+            print("añadimos al almacen pequeño")
+            return self.__almacenPequeno.guardar_paquete(objeto, client)
         else:
-            return client.get_id()
-
-        #size_object = sys.getsizeof(objeto)
-
-        #if size_object <= 32:
-          #  return small_warehouse.guardar_paquete(objeto, client)
-        #else:
-         #   return big_warehouse.guardar_paquete(objeto, client)
+            print("añadimos al almacen grande")
+            return self.__almacenGrande.guardar_paquete(objeto, client)
 
 
-    def recuperar_objeto(id_paquete, client):
+    def recuperar_objeto(self, id_paquete, client):
         """
         Buscamos el objeto en el almacen pequenioo, si no existe lo buscamos en el grande.
         :param id_paquete: identificador del objeto que estamos buscando.
@@ -51,9 +53,9 @@ class Empresa:
         """
         pass
 
-        object_to_return = small_warehouse.get_package(id_paquete, client)
+        object_to_return = self.__almacenPequeno.recuperar_paquete(id_paquete, client)
         if object_to_return is "no es este warehouse":
-            object_to_return = big_warehouse.get_package(id_paquete, client)
+            object_to_return = self.__almacenGrande.recuperar_paquete(id_paquete, client)
         return object_to_return
 
 
@@ -65,7 +67,7 @@ class Empresa:
         """
         self.__clientes.append(client)
 
-    def baja_cliente(client):
+    def baja_cliente(self, client):
         """
         Da de baja a un cliente en el negocio, si existe.
         :param cliente: cliente al que vamos a dar de baja.
@@ -73,12 +75,14 @@ class Empresa:
         """
         pass
 
-        list_clients.remove(client)
+        for i in range(0, len(self.__clientes)):
+            if client.get_id() is self.__clientes[i].get_id():
+                self.__clientes.pop(i)
 
         return "hemos eliminado al cliente."
 
 
-    def estado_almacenamiento():
+    def estado_almacenamiento(self):
         """
         Imprime por pantalla el estado de los almacenes.
             para el almacen de objetos pequeños imprimmos, la informacion completa de los contenedores, pales y paquetes.
@@ -87,11 +91,11 @@ class Empresa:
         """
 
         pass
-        # small_warehouse.status()
-        big_warehouse.status()
+        self.__almacenPequeno.status()
+        self.__almacenGrande.status()
 
 
-    def objetos_de(cliente):
+    def objetos_de(self, cliente):
         """
         Imprime por pantalla el listado de objetos que pertenecen a un cliente.
 

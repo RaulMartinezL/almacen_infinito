@@ -9,7 +9,6 @@ class Block:
     __hash_key = None
     __cliente = None
     __value_to_cast = None
-    __id = None
 
     def __init__(self):
         self._id = uuid4()
@@ -28,7 +27,7 @@ class Block:
         self.__cliente = cliente
 
         # establecemos una hash key de 8 digitos enteros como clave unica del paquete.
-        #self.__hash_key = abs(hash(data)) % (10 ** 8)
+        self.__hash_key = abs(hash(data)) % (10 ** 8)
 
         return self.__hash_key
 
@@ -48,7 +47,7 @@ class Block:
         """
         :return: cliente al que pertenece el paquete.
         """
-        return self.__cliente
+        return self.__cliente.get_name()
 
     def get_hash_key(self):
         """
@@ -56,8 +55,3 @@ class Block:
         """
         return self.__hash_key
 
-    def get_id(self):
-        """
-        :return:
-        """
-        return self.__id

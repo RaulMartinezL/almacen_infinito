@@ -7,12 +7,16 @@ if __name__ == "__main__":
 
     empresa1 = Empresa()
     cliente = Cliente('Claudia')
+    cliente2 = Cliente('Roberto')
     empresa1.alta_cliente(cliente)
 
     paquete = "hello"
     paquete2 = 92
 
     print(sys.getsizeof(paquete))
-    print(sys.getsizeof(paquete2))
 
     aa = empresa1.guardar_objeto(paquete, cliente)
+    # aa1 = empresa1.guardar_objeto(paquete2, cliente)
+
+
+    # empresa1.estado_almacenamiento()

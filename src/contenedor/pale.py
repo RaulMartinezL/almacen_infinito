@@ -83,7 +83,7 @@ class Pool:
     def get_package(self, hash_key_object, client_who_own):
         """
         buscamos en los bloques que están allocated (es decir, que tienen informacion) un paquete con
-        el contenido indicado en param package. Devuelve None si no existe.
+        el contenido indicado en . Devuelve None si no existe.
 
         :param package: puede ser varios tipos. Contenido del paquete que estamos buscando.
         :return: Pueden ser varios tipos. Devuelve el contenido del paquete o None si no existe.
