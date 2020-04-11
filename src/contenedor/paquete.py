@@ -1,18 +1,15 @@
 import sys
-from uuid import uuid4
 
 
 class Block:
 
     __size = 0
     __data = None
-    __hash_key = None
-    __cliente = None
+    __clientes = []
     __value_to_cast = None
 
     def __init__(self):
-        self._id = uuid4()
-
+        pass
     def set_data(self, data, cliente):
         """
         establecemos los datos que va a contener el paquete. Casteamos a str el contenido para guardar todos los datos
@@ -24,12 +21,9 @@ class Block:
         self.__size = sys.getsizeof(data)
         self.__data = str(data)
         self.__value_to_cast = type(data)
-        self.__cliente = cliente
+        self.__clientes.append(cliente)
+        print(self.__clientes)
 
-        # establecemos una hash key de 8 digitos enteros como clave unica del paquete.
-        self.__hash_key = abs(hash(data)) % (10 ** 8)
-
-        return self.__hash_key
 
     def get_data(self):
         """
@@ -43,15 +37,37 @@ class Block:
         """
         return self.__size
 
-    def get_client(self):
+    def get_clients(self):
         """
-        :return: cliente al que pertenece el paquete.
+        :return: nombre de los clientes que poseen este paquete.
         """
-        return self.__cliente.get_name()
 
-    def get_hash_key(self):
+        list_name_clientes = []
+        for i in range(0, len(self.__clientes)):
+            list_name_clientes.append(self.__clientes[i].get_name())
+
+        return list_name_clientes
+
+    def get_clients_id(self):
         """
-        :return: hash key de 8 digitos enteros. Identifica el paquete.
+
+        :return:
         """
-        return self.__hash_key
+
+        list_id_clientes = []
+        for i in range(0, len(self.__clientes)):
+            list_id_clientes.append(self.__clientes[i].get_id())
+
+        return list_id_clientes
+
+    def delete_ownership(self, client):
+        """
+
+        :param client:
+        :return:
+        """
+        for i in range(0, len(self.__clientes)):
+            if self.__clientes[i].get_id() == client.get_id():
+                self.__clientes.pop(i)
+        print(self.__clientes)
 

@@ -72,7 +72,7 @@ class Arena:
 
         return False
 
-    def __fetch_package(self, hash_key_object, client_who_own):
+    def __fetch_package(self, data_package, client):
         """
         recorre la lista de pool los cuales tienen blocks (esta lista es self.__used_pools) hasta encontrar un pool
         donde class_idx sea la que estamos buscando.
@@ -87,7 +87,7 @@ class Arena:
             sys.exit("para buscar paquetes primero tienes que meter al menos uno")
 
         for i in range(0, len(self.__used_pools)):
-            package_to_return = self.__used_pools[i].get_package(hash_key_object, client_who_own)
+            package_to_return = self.__used_pools[i].get_package(data_package, client)
             if package_to_return is not None:
                 return package_to_return
 
@@ -134,9 +134,6 @@ class Arena:
         # chequeamos el tamaño del paquete que nos pasan
         size = sys.getsizeof(package)
 
-        can_insert = self.__check_size(size)
-        print(can_insert)
-
         # obtenemos el pool, dónde los tamaños de los blocks son suficientes para nuestro paquete
         pool_where_insert = self.__get_pool_idx(self.__get_class_idx(size))
 
@@ -144,30 +141,18 @@ class Arena:
             return False
 
         # insertamos el paquete en el pool correspondiente
-        return pool_where_insert.insert_block(package, client)
+        pool_where_insert.insert_block(package, client)
+        return True
 
-    def get_package(self, hash_key, client):
-        """
-        devuelve los datos de un paquete cuyo contenido es el que buscamos.
-
-        :param package: puede ser varios tipos. datos que estamos buscando en el almacen.
-        :return: puede ser varios tipos. datos que contiene el paquete que hemos encontrado.
+    def get_package(self, data_package, client):
         """
 
-        ''' 
-        # chequeamos el tamaño del bloque que nos pasan obteniendo el class_idx de los pools que vamos a buscar
-        pool_idx = self.__get_class_idx(sys.getsizeof(package))
+        :param data_package:
+        :param client:
+        :return:
+        """
 
-        # obtenemos el paquete cuyo data es el mismo al que estamos buscando
-        package_to_return = self.__fetch_package(package, pool_idx)
-        '''
-
-        package_to_return = self.__fetch_package(hash_key, client)
-
-        if package_to_return is None:
-            return "el paquete no está en este almacen"
-        else:
-            return package_to_return
+        return self.__fetch_package(data_package, client)
 
 
 
@@ -196,7 +181,7 @@ class Arena:
             for j in range(0, len(self.__used_pools[i].allocated_blocks)):
                 size_object = self.__used_pools[i].allocated_blocks[j].get_size()
                 content_object = self.__used_pools[i].allocated_blocks[j].get_data()
-                client_object = self.__used_pools[i].allocated_blocks[j].get_client()
+                client_object = self.__used_pools[i].allocated_blocks[j].get_clients()
                 print(f"Este objeto contiene '{content_object}', pertenece a {client_object} y ocupa {size_object}")
                 num_objects += 1
 

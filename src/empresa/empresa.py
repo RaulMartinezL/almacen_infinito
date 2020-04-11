@@ -19,12 +19,12 @@ class Empresa:
         self.__almacenGrande = Big_almacen()
         self.__almacenPequeno = Small_almacen()
 
-    def guardar_objeto(self, objeto, client: Cliente):
+    def guardar_objeto(self, objeto, client):
         """
         Comprobamos que el cliente está en la base de datos. Guardamos el objeto en el lugar adecuado.
          Devuelve un identificador para poder recuperarlo.
         :param objeto: objeto que vamos a guardar.
-        :param cliente: cliente al que pertenece el objeto.
+        :param client: cliente al que pertenece el objeto.
         :return: str. identificador unico del objeto.
         """
         list_of_ids = []
@@ -33,6 +33,9 @@ class Empresa:
 
         if client.get_id() not in list_of_ids:
             return "el cliente no existe en el sistema."
+
+        print(list_of_ids)
+        print(self.__clientes)
 
         size_object = sys.getsizeof(objeto)
 
@@ -51,11 +54,10 @@ class Empresa:
         :param client: cliente al que pertenece el objeto que estamos buscando.
         :return: el objeto que hemos encontrado. Si no devolvemos "no es este warehouse".
         """
-        pass
 
-        object_to_return = self.__almacenPequeno.recuperar_paquete(id_paquete, client)
-        if object_to_return is "no es este warehouse":
-            object_to_return = self.__almacenGrande.recuperar_paquete(id_paquete, client)
+        #object_to_return = self.__almacenPequeno.recuperar_paquete(id_paquete, client)
+        #if object_to_return is "no es este warehouse":
+        object_to_return = self.__almacenGrande.recuperar_paquete(id_paquete, client)
         return object_to_return
 
 

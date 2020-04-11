@@ -35,14 +35,22 @@ class Big_almacen:
         self.__create__container()
         return self.guardar_paquete(package, cliente)
 
-    def recuperar_paquete(self, id_paquete, cliente):
+    def recuperar_paquete(self, data_package, client):
         """
 
         :param id_paquete:
         :param cliente:
         :return:
         """
-        pass
+        paquete = None
+
+        for i in range(0, len(self.__used_containers)):
+            paquete = self.__used_containers[i].get_package(data_package, client)
+
+        if paquete is None:
+            return "el paquete no está en este almacen o el dueño no coincide"
+        else:
+            return paquete
 
     def status(self):
         """
