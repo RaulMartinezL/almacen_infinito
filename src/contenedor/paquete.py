@@ -22,8 +22,6 @@ class Block:
         self.__data = str(data)
         self.__value_to_cast = type(data)
         self.__clientes.append(cliente)
-        print(self.__clientes)
-
 
     def get_data(self):
         """
@@ -60,14 +58,9 @@ class Block:
 
         return list_id_clientes
 
-    def delete_ownership(self, client):
+    def delete_owners(self):
         """
 
-        :param client:
         :return:
         """
-        for i in range(0, len(self.__clientes)):
-            if self.__clientes[i].get_id() == client.get_id():
-                self.__clientes.pop(i)
-        print(self.__clientes)
-
+        self.__clientes = []

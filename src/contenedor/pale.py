@@ -1,4 +1,5 @@
 from src.contenedor import paquete as paquete
+import sys
 
 
 class Pool:
@@ -27,7 +28,7 @@ class Pool:
         """
 
         # revisar este if si el check full no funciona.
-        if len(self.__untouched_blocks) + len(self.__free_blocks) != 0:
+        if len(self.__untouched_blocks) + len(self.__free_blocks) > 0:
             return True
         else:
             return False
@@ -79,11 +80,9 @@ class Pool:
             block24.set_data(block_to_insert, client)
             self.allocated_blocks.append(block24)
         else:
-            print(self.__untouched_blocks)
             block24 = self.__untouched_blocks.pop()
             block24.set_data(block_to_insert, client)
             self.allocated_blocks.append(block24)
-            print(self.allocated_blocks)
 
     def get_package(self, data_package, client):
         """
@@ -95,15 +94,14 @@ class Pool:
             data = self.allocated_blocks[i].get_data()
             clients_id = self.allocated_blocks[i].get_clients_id()
 
+            # si los datos que estamos buscando coinciden
             if data == data_package:
                 # si el id del cliente que recibimos, está en la lista de dueños del paquete:
                 for z in range(0, len(clients_id)):
-
                     if client.get_id() == clients_id[z]:
-                        self.allocated_blocks[i].delete_ownership(client)
                         package_to_return = self.allocated_blocks.pop(i)
+                        package_to_return.delete_owners()
                         self.__free_blocks.append(package_to_return)
                         return package_to_return.get_data()
         # no hemos encontrado un paquete con el mismo contenido que el que buscamos
         # o no es el dueño adecuado
-        return None

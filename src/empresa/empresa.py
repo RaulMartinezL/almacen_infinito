@@ -5,15 +5,11 @@ from ..contenedor.paquete import Block
 from .cliente import Cliente
 
 
-
 class Empresa:
-
     __almacenGrande = None
     __almacenPequeno = None
 
     __clientes = []
-
-
 
     def __init__(self):
         self.__almacenGrande = Big_almacen()
@@ -21,11 +17,7 @@ class Empresa:
 
     def guardar_objeto(self, objeto, client):
         """
-        Comprobamos que el cliente está en la base de datos. Guardamos el objeto en el lugar adecuado.
-         Devuelve un identificador para poder recuperarlo.
-        :param objeto: objeto que vamos a guardar.
-        :param client: cliente al que pertenece el objeto.
-        :return: str. identificador unico del objeto.
+
         """
         list_of_ids = []
         for c in range(0, len(self.__clientes)):
@@ -37,26 +29,19 @@ class Empresa:
         size_object = sys.getsizeof(objeto)
 
         if size_object <= 32:
-            print("añadimos al almacen pequeño")
             return self.__almacenPequeno.guardar_paquete(objeto, client)
         else:
-            print("añadimos al almacen grande")
             return self.__almacenGrande.guardar_paquete(objeto, client)
 
-
     def recuperar_objeto(self, id_paquete, client):
-        """
-        Buscamos el objeto en el almacen pequenioo, si no existe lo buscamos en el grande.
-        :param id_paquete: identificador del objeto que estamos buscando.
-        :param client: cliente al que pertenece el objeto que estamos buscando.
-        :return: el objeto que hemos encontrado. Si no devolvemos "no es este warehouse".
+        """"
+
         """
 
-        #object_to_return = self.__almacenPequeno.recuperar_paquete(id_paquete, client)
-        #if object_to_return is "no es este warehouse":
+        # object_to_return = self.__almacenPequeno.recuperar_paquete(id_paquete, client)
+        # if object_to_return is "no es este warehouse":
         object_to_return = self.__almacenGrande.recuperar_paquete(id_paquete, client)
         return object_to_return
-
 
     def alta_cliente(self, client):
         """
@@ -80,19 +65,19 @@ class Empresa:
 
         return "hemos eliminado al cliente."
 
-
-    def estado_almacenamiento(self):
+    def estado_almacenamiento(self, almacen) -> None:
         """
         Imprime por pantalla el estado de los almacenes.
             para el almacen de objetos pequeños imprimmos, la informacion completa de los contenedores, pales y paquetes.
             para el almacen de objetos grandes, el numero de objetos, tamaño, contenido y cliente de cada uno.
-        :return: nada
+        :param almacen: string que indica de que almacen queremos la informacion. 'small' para el pequeño 'big' para el grande.
+        :return: None
         """
 
-        pass
-        self.__almacenPequeno.status()
-        self.__almacenGrande.status()
-
+        if almacen is "small":
+            self.__almacenPequeno.status()
+        if almacen is "big":
+            self.__almacenGrande.status()
 
     def objetos_de(self, cliente):
         """

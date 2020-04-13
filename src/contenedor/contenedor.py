@@ -6,6 +6,8 @@ class Arena:
     """
     Contenedor es la clase equivalente a la Arena de python
     """
+    __numero_maximo_pales = 4
+
     __blocks_size = []
 
     __free_pools = []
@@ -17,7 +19,7 @@ class Arena:
 
     def __init__(self, blocks_size):
 
-        for i in range(0, 4):
+        for i in range(0, self.__numero_maximo_pales):
             self.__create_free_pool()
         self.__blocks_size = blocks_size
 
@@ -93,21 +95,6 @@ class Arena:
 
         return None
 
-    def is_not_full(self):
-        """
-        comprobamos que hay espacio disponible en los palés que contiene este contenedor.
-        :return: True si existe espacio disponible. False si no existe espacio disponible.
-        """
-
-        if len(self.__free_pools) > 0:
-            return True
-
-        for i in range(0, len(self.__used_pools)):
-            if self.__used_pools[i].is_not_full() is True:
-                return True
-
-        return False
-
     def __check_size(self, size):
         """
         Esto es una tonteria, ya se compreuba en get_pool_idx Y en get_class_idx
@@ -121,6 +108,21 @@ class Arena:
                 can_insert = True
 
         return can_insert
+
+    def is_not_full(self):
+        """
+        comprobamos que hay espacio disponible en los palés que contiene este contenedor.
+        :return: True si existe espacio disponible. False si no existe espacio disponible.
+        """
+
+        for i in range(0, len(self.__used_pools)):
+            if self.__used_pools[i].is_not_full():
+                return True
+
+        if len(self.__free_pools) > 0:
+            return True
+
+        return False
 
     def add_package(self, package, client):
         """
@@ -137,11 +139,12 @@ class Arena:
         # obtenemos el pool, dónde los tamaños de los blocks son suficientes para nuestro paquete
         pool_where_insert = self.__get_pool_idx(self.__get_class_idx(size))
 
-        if pool_where_insert is False:
+        if not pool_where_insert:
             return False
 
         # insertamos el paquete en el pool correspondiente
         pool_where_insert.insert_block(package, client)
+
         return True
 
     def get_package(self, data_package, client):
@@ -161,12 +164,13 @@ class Arena:
         imprimimos el estado del almacen small
         :return: nada.
         """
-        print(self.__blocks_size)
 
         print(f"tenemos {len(self.__used_pools)} palés usados.")
         for i in range(0, len(self.__used_pools)):
-            for j in range(0, len(self.__used_pools[i].allocated_blocks)):
-                print(self.__used_pools[i].allocated_blocks[j].get_size())
+            print(len(self.__used_pools[i].allocated_blocks))
+
+            # for j in range(0, len(self.__used_pools[i].allocated_blocks)):
+                # print(self.__used_pools[i].allocated_blocks[j]).get_size())
 
     def status_big_warehouse(self):
         """

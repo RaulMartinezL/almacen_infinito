@@ -6,27 +6,28 @@ import sys
 if __name__ == "__main__":
 
     empresa1 = Empresa()
-    cliente = Cliente('Claudia')
+
+    cliente1 = Cliente('Claudia')
     cliente2 = Cliente('Roberto')
-    empresa1.alta_cliente(cliente)
+
+    paquete1 = 1
+    paquete2 = 2
+
+    empresa1.alta_cliente(cliente1)
     empresa1.alta_cliente(cliente2)
 
-    paquete = "hello"
-    paquete2 = "hello"
+    empresa1.guardar_objeto(paquete1, cliente1)
+    empresa1.guardar_objeto(paquete1, cliente2)
 
-    print(sys.getsizeof(paquete))
+    empresa1.estado_almacenamiento("small")
 
-    print("añadimos paquete 1")
-    aa = empresa1.guardar_objeto(paquete2, cliente2)
-    print("añadimos paquete 2")
-    a = empresa1.guardar_objeto(paquete, cliente)
-    print("mis muertow")
+    empresa1.recuperar_objeto(paquete1, cliente1)
 
-    fff = empresa1.recuperar_objeto(paquete, cliente)
-    fffd = empresa1.recuperar_objeto(paquete, cliente2)
+    empresa1.estado_almacenamiento("small")
 
-    print(fff)
-    print(fffd)
+
+
+
 
 
     # empresa1.estado_almacenamiento()

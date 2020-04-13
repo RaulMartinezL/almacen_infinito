@@ -23,6 +23,7 @@ class Small_almacen:
         :param cliente:
         :return:
         """
+
         # buscamos si existe un pool del tamaño adecuado en los contenedores que hay actualmente creados.
         for i in range(0, len(self.__used_containers)):
             # si existe espacio en el contenedor, insertamos el paquete.
@@ -30,7 +31,8 @@ class Small_almacen:
                 return self.__used_containers[i].add_package(package, cliente)
 
         # si llegamos a este punto, quiere decir que no existe un pale del tamaño de paquete necesario para meter
-        # nuestro paquete, asique creamos un contenedor nuevo y volvemos a llamar a esta misma funcion.
+        # nuestro paquete o los contenedores estám llenos, asique creamos un contenedor nuevo y volvemos a llamar a
+        # esta misma funcion.
         self.__create__container()
         return self.guardar_paquete(package, cliente)
 
@@ -54,11 +56,6 @@ class Small_almacen:
 
         :return:
         """
-
-        pools = self.__used_containers[0].get_pools()
-
-        for i in range(0, len(pools)):
-            print(pools[i].allocated_blocks[0].get_data())
 
         print("Informacion del almacen pequeño: ")
         print(f"En el almacen pequeño tenemos {len(self.__used_containers)} contenedores usados: ")
