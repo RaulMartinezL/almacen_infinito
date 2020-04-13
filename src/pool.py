@@ -27,7 +27,7 @@ class Pool:
         print(len(self.__untouched_blocks))
         print(len(self.__free_blocks))
         # revisar este if si el check full no funciona.
-        if len(self.__untouched_blocks) + len(self.__free_blocks) != 0:
+        if len(self.__untouched_blocks) + len(self.__free_blocks) > 0:
             return True
         else:
             return False
