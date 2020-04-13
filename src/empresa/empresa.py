@@ -34,9 +34,6 @@ class Empresa:
         if client.get_id() not in list_of_ids:
             return "el cliente no existe en el sistema."
 
-        print(list_of_ids)
-        print(self.__clientes)
-
         size_object = sys.getsizeof(objeto)
 
         if size_object <= 32:

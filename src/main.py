@@ -9,17 +9,17 @@ if __name__ == "__main__":
     cliente = Cliente('Claudia')
     cliente2 = Cliente('Roberto')
     empresa1.alta_cliente(cliente)
-    #empresa1.alta_cliente(cliente2)
+    empresa1.alta_cliente(cliente2)
 
     paquete = "hello"
-    paquete2 = 92
+    paquete2 = "hello"
 
     print(sys.getsizeof(paquete))
 
     print("añadimos paquete 1")
-    aa = empresa1.guardar_objeto(paquete, cliente)
+    aa = empresa1.guardar_objeto(paquete2, cliente2)
     print("añadimos paquete 2")
-    aa1 = empresa1.guardar_objeto(paquete, cliente2)
+    a = empresa1.guardar_objeto(paquete, cliente)
     print("mis muertow")
 
     fff = empresa1.recuperar_objeto(paquete, cliente)
