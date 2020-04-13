@@ -165,9 +165,9 @@ class Arena:
         :return: nada.
         """
 
-        print(f"tenemos {len(self.__used_pools)} palés usados.")
+        print(f"tenemos {len(self.__used_pools)} palé(s).")
         for i in range(0, len(self.__used_pools)):
-            print(len(self.__used_pools[i].allocated_blocks))
+            print(f"En el palé {i+1} tenemos {len(self.__used_pools[i].allocated_blocks)} paquete(s)\n")
 
             # for j in range(0, len(self.__used_pools[i].allocated_blocks)):
                 # print(self.__used_pools[i].allocated_blocks[j]).get_size())

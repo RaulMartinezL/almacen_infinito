@@ -18,6 +18,7 @@ if __name__ == "__main__":
 
     empresa1.guardar_objeto(paquete1, cliente1)
     empresa1.guardar_objeto(paquete1, cliente2)
+    empresa1.guardar_objeto(paquete2, cliente1)
 
     empresa1.estado_almacenamiento("small")
 

@@ -58,7 +58,7 @@ class Small_almacen:
         """
 
         print("Informacion del almacen pequeño: ")
-        print(f"En el almacen pequeño tenemos {len(self.__used_containers)} contenedores usados: ")
+        print(f"En el almacen pequeño tenemos {len(self.__used_containers)} contenedor(es): ")
         for i in range(0, len(self.__used_containers)):
             print(f"En el contenedor {i + 1}:")
             self.__used_containers[i].status_small_warehouse()
