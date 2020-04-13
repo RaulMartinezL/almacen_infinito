@@ -87,19 +87,21 @@ def objetos_de(cliente):
 
 if __name__ == "__main__":
     client1 = 'Claudia'
+    client2 = 'Raul'
     paquete1 = 'paquete1'
     paquete2 = 'paquete2'
-    paquete11 = 4
-    paquete22 = 4.4
 
 
 
     alta_cliente(client1)
-    key_paquete1 = guardar_objeto(paquete1, client1)
-    key_paquete2 = guardar_objeto(paquete2, client1)
+    alta_cliente(client2)
 
-    key_paquete11 = guardar_objeto(paquete11, client1)
-    key_paquete22 = guardar_objeto(paquete22, client1)
+    key_paquete1 = guardar_objeto(paquete1, client1)
+    key_paquete2 = guardar_objeto(paquete1, client2)
+
+    print(key_paquete1)
+    print("dd")
+    print(key_paquete2)
 
     estado_almacenamiento()
 

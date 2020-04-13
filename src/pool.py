@@ -24,6 +24,8 @@ class Pool:
         :return: True si hay bloques libre. False si no hay bloques libres.
         """
 
+        print(len(self.__untouched_blocks))
+        print(len(self.__free_blocks))
         # revisar este if si el check full no funciona.
         if len(self.__untouched_blocks) + len(self.__free_blocks) != 0:
             return True
@@ -96,3 +98,14 @@ class Pool:
                 return package_to_return.get_data()
 
         return None
+
+    def check_same_package(self, package, client):
+
+        print("check same package")
+
+        for i in range(0, len(self.allocated_blocks)):
+            hash_key = self.allocated_blocks[i].get_hash_key()
+            if hash_key == package:
+                self.allocated_blocks[i].add_client(client)
+                return hash_key
+
