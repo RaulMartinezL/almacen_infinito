@@ -37,10 +37,13 @@ class Empresa:
         """"
 
         """
+        list_id_clientes = []
+        for i in range(0, len(self.__clientes)):
+            list_id_clientes.append(self.__clientes[i].get_id())
 
-        # object_to_return = self.__almacenPequeno.recuperar_paquete(id_paquete, client)
-        # if object_to_return is "no es este warehouse":
-        object_to_return = self.__almacenGrande.recuperar_paquete(id_paquete, client)
+        object_to_return = self.__almacenPequeno.recuperar_paquete(id_paquete, client)
+        if object_to_return is "no es este warehouse":
+            object_to_return = self.__almacenGrande.recuperar_paquete(id_paquete, client)
         return object_to_return
 
     def alta_cliente(self, client):

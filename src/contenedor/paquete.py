@@ -21,7 +21,10 @@ class Block:
         self.__size = sys.getsizeof(data)
         self.__data = str(data)
         self.__value_to_cast = type(data)
-        self.__clientes.append(cliente)
+
+        clients_id = self.get_clients_id()
+        if cliente.get_id() not in clients_id:
+            self.__clientes.append(cliente)
 
     def get_data(self):
         """

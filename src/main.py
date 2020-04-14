@@ -9,26 +9,17 @@ if __name__ == "__main__":
 
     cliente1 = Cliente('Claudia')
     cliente2 = Cliente('Roberto')
+    cliente3 = Cliente('Raul')
 
     paquete1 = 1
     paquete2 = 2
 
     empresa1.alta_cliente(cliente1)
     empresa1.alta_cliente(cliente2)
+    empresa1.alta_cliente(cliente3)
 
     empresa1.guardar_objeto(paquete1, cliente1)
     empresa1.guardar_objeto(paquete1, cliente2)
     empresa1.guardar_objeto(paquete2, cliente1)
 
     empresa1.estado_almacenamiento("small")
-
-    empresa1.recuperar_objeto(paquete1, cliente1)
-
-    empresa1.estado_almacenamiento("small")
-
-
-
-
-
-
-    # empresa1.estado_almacenamiento()
