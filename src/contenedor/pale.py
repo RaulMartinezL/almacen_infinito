@@ -1,8 +1,10 @@
-from src import paquete as paquete
+from src.contenedor import paquete as paquete
+import sys
 
 
 class Pool:
-    __pool_size = None
+
+    __pool_size = 96
     __block_size = None
     __class_idx = None
 
@@ -10,16 +12,17 @@ class Pool:
     __free_blocks = []
     __untouched_blocks = []
 
-    def __init__(self, pool_size):
-        self.__pool_size = pool_size
+    def __init__(self):
+        pass
+
 
     def get_block_size(self):
         return self.__block_size
 
     def is_not_full(self):
         """
-        suma la longitud de free_blocks y untouched_blocks. Si es mayor qué 0, quiere decir que hay bloques en los
-        que podemos insertar el paquete.
+        suma la longitud de free_blocks y untouched_blocks. Si es mayor que 0, quiere decir que hay bloques en los
+        que podemos insertar paquetes.
 
         :return: True si hay bloques libre. False si no hay bloques libres.
         """
@@ -61,35 +64,51 @@ class Pool:
         """
         insertamos un paquete en el pool. en este todas las comprobacions del size del paquete y class_idx están hechas.
 
-        :param client: cliente al que pertenece el paquete que estamos insertando.
         :param block_to_insert: puede ser varios tipos. Datos que vamos a insertar en el paquete.
+        :param client: cliente al que pertenece el paquete que estamos insertando.
         :return: string con informacion.
         """
 
         if self.is_not_full() is False:
             return 'el paquete no se puede almacenar porque no hay espacio en el pool seleccionado.'
 
+        for i in range(0, len(self.allocated_blocks)):
+            if self.allocated_blocks[i].get_data() == block_to_insert:
+                self.allocated_blocks[i].set_data(block_to_insert, client)
+                return "añadido cliente a la lista "
+
         if len(self.__free_blocks) > 0:
             block24 = self.__free_blocks.pop()
-            hash_key = block24.set_data(block_to_insert, client)
+            block24.set_data(block_to_insert, client)
             self.allocated_blocks.append(block24)
-            return hash_key
         else:
             block24 = self.__untouched_blocks.pop()
-            hash_key = block24.set_data(block_to_insert, client)
+            block24.set_data(block_to_insert, client)
             self.allocated_blocks.append(block24)
-            return hash_key
 
-    def get_package(self, hash_key_object, client_who_own):
+    def get_package(self, data_package, client):
         """
-        buscamos en los bloques que están allocated (es decir, que tienen informacion) un paquete con
-        el contenido indicado en param package. Devuelve None si no existe.
 
-        :param package: puede ser varios tipos. Contenido del paquete que estamos buscando.
-        :return: Pueden ser varios tipos. Devuelve el contenido del paquete o None si no existe.
         """
 
         for i in range(0, len(self.allocated_blocks)):
+<<<<<<< HEAD:src/contenedor/pale.py
+            # obtenemos el dato del paquete que estamos buscando y la liste de dueños
+            data = self.allocated_blocks[i].get_data()
+            clients_id = self.allocated_blocks[i].get_clients_id()
+
+            # si los datos que estamos buscando coinciden
+            if data == data_package:
+                # si el id del cliente que recibimos, está en la lista de dueños del paquete:
+                for z in range(0, len(clients_id)):
+                    if client.get_id() == clients_id[z]:
+                        package_to_return = self.allocated_blocks.pop(i)
+                        package_to_return.delete_owners()
+                        self.__free_blocks.append(package_to_return)
+                        return package_to_return.get_data()
+        # no hemos encontrado un paquete con el mismo contenido que el que buscamos
+        # o no es el dueño adecuado
+=======
             hash_key = self.allocated_blocks[i].get_hash_key()
             client = self.allocated_blocks[i].get_client()
             if hash_key == hash_key_object and client == client_who_own:
@@ -109,3 +128,4 @@ class Pool:
                 self.allocated_blocks[i].add_client(client)
                 return hash_key
 
+>>>>>>> master:src/pool.py
