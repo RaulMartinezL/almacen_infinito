@@ -139,6 +139,7 @@ class Arena:
         # obtenemos el pool, dónde los tamaños de los blocks son suficientes para nuestro paquete
         pool_where_insert = self.__get_pool_idx(self.__get_class_idx(size))
 
+<<<<<<< HEAD:src/contenedor/contenedor.py
         if not pool_where_insert:
             return False
 
@@ -146,6 +147,16 @@ class Arena:
         pool_where_insert.insert_block(package, client)
 
         return True
+=======
+        foo = pool_where_insert.check_same_package(package, client)
+        print(foo)
+
+        if foo:
+            return foo
+        else:
+            # insertamos el paquete en el pool correspondiente
+            return pool_where_insert.insert_block(package, client)
+>>>>>>> master:src/arena.py
 
     def get_package(self, data_package, client):
         """

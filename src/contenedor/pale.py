@@ -27,6 +27,8 @@ class Pool:
         :return: True si hay bloques libre. False si no hay bloques libres.
         """
 
+        print(len(self.__untouched_blocks))
+        print(len(self.__free_blocks))
         # revisar este if si el check full no funciona.
         if len(self.__untouched_blocks) + len(self.__free_blocks) > 0:
             return True
@@ -90,6 +92,7 @@ class Pool:
         """
 
         for i in range(0, len(self.allocated_blocks)):
+<<<<<<< HEAD:src/contenedor/pale.py
             # obtenemos el dato del paquete que estamos buscando y la liste de dueños
             data = self.allocated_blocks[i].get_data()
             clients_id = self.allocated_blocks[i].get_clients_id()
@@ -105,3 +108,24 @@ class Pool:
                         return package_to_return.get_data()
         # no hemos encontrado un paquete con el mismo contenido que el que buscamos
         # o no es el dueño adecuado
+=======
+            hash_key = self.allocated_blocks[i].get_hash_key()
+            client = self.allocated_blocks[i].get_client()
+            if hash_key == hash_key_object and client == client_who_own:
+                package_to_return = self.allocated_blocks.pop(i)
+                self.__free_blocks.append(package_to_return)
+                return package_to_return.get_data()
+
+        return None
+
+    def check_same_package(self, package, client):
+
+        print("check same package")
+
+        for i in range(0, len(self.allocated_blocks)):
+            hash_key = self.allocated_blocks[i].get_hash_key()
+            if hash_key == package:
+                self.allocated_blocks[i].add_client(client)
+                return hash_key
+
+>>>>>>> master:src/pool.py
