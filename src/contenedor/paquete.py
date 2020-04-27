@@ -26,6 +26,9 @@ class Block:
         if cliente.get_id() not in clients_id:
             self.__clientes.append(cliente)
 
+        #print("Dueños del paquete son:")
+        #print(self.__clientes)
+
     def get_data(self):
         """
         :return: Devuelve el contenido(data) del paquete de la clase que previamente era (antes del casta a str)

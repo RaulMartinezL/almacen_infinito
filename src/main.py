@@ -3,44 +3,32 @@ from src.empresa.empresa import Empresa
 
 import sys
 
-if __name__ == "__main__":
-<<<<<<< HEAD
-=======
-    client1 = 'Claudia'
-    client2 = 'Raul'
-    paquete1 = 'paquete1'
-    paquete2 = 'paquete2'
->>>>>>> master
 
-    empresa1 = Empresa()
+#TODO: revisar documentacion de las funciones
+#TODO: añadir robots
+#TODO: añadir almacen remoto
+
+if __name__ == "__main__":
+
+    empresa = Empresa()
 
     cliente1 = Cliente('Claudia')
-    cliente2 = Cliente('Roberto')
-    cliente3 = Cliente('Raul')
+    cliente2 = Cliente('Raul')
 
-    paquete1 = 1
-    paquete2 = 2
+    empresa.alta_cliente(cliente1)
+    empresa.alta_cliente(cliente2)
 
-<<<<<<< HEAD
-    empresa1.alta_cliente(cliente1)
-    empresa1.alta_cliente(cliente2)
-    empresa1.alta_cliente(cliente3)
+    objeto1 = 4
 
-    empresa1.guardar_objeto(paquete1, cliente1)
-    empresa1.guardar_objeto(paquete1, cliente2)
-    empresa1.guardar_objeto(paquete2, cliente1)
-=======
-    alta_cliente(client1)
-    alta_cliente(client2)
 
-    key_paquete1 = guardar_objeto(paquete1, client1)
-    key_paquete2 = guardar_objeto(paquete1, client2)
+    empresa.guardar_objeto(objeto1, cliente1)
 
-    print(key_paquete1)
-    print("dd")
-    print(key_paquete2)
->>>>>>> master
+    empresa.estado_almacenamiento("small")
 
-    empresa1.recuperar_objeto(paquete1, cliente3)
+    empresa.guardar_objeto(objeto1, cliente2)
 
-    empresa1.estado_almacenamiento("small")
+    empresa.estado_almacenamiento("small")
+
+    empresa.recuperar_objeto(objeto1, cliente2)
+
+    empresa.estado_almacenamiento("small")
