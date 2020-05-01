@@ -1,8 +1,6 @@
 pipeline{
     agent{
-        docker{
-            defaultContainer 'python'
-        }
+        any
     }
     stages{
         stage('Launch Coverage Test'){
