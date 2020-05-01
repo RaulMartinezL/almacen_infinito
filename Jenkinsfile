@@ -1,6 +1,6 @@
 pipeline{
     agent{
-        kubernetes{
+        docker{
             defaultContainer 'python'
         }
     }
