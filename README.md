@@ -5,3 +5,6 @@ La versión que funciona (master) es la final de 1. Gestion de Memoria
 Aún así existe un bug. Al crear en el main almacen_pequeño y almacen_grande parece ser que es el mismo objeto.
 
 probamos con el jenkins
+
+
+afjhakjFGBSJUGHSADG
