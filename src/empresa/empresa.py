@@ -44,6 +44,7 @@ class Empresa:
         object_to_return = self.__almacenPequeno.recuperar_paquete(id_paquete, client)
         if object_to_return is "no es este warehouse":
             object_to_return = self.__almacenGrande.recuperar_paquete(id_paquete, client)
+        print(object_to_return)
         return object_to_return
 
     def alta_cliente(self, client):

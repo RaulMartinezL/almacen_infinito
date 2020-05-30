@@ -6,22 +6,24 @@ class Arena:
     """
     Contenedor es la clase equivalente a la Arena de python
     """
-    __numero_maximo_pales = 4
 
-    __blocks_size = []
-
-    __free_pools = []
-    __used_pools = []
-
-
-    def get_pools(self):
-        return self.__used_pools
 
     def __init__(self, blocks_size):
+
+        self.__numero_maximo_pales = 4
+
+        self.__blocks_size = []
+
+        self.__free_pools = []
+        self.__used_pools = []
+
 
         for i in range(0, self.__numero_maximo_pales):
             self.__create_free_pool()
         self.__blocks_size = blocks_size
+
+    def get_pools(self):
+        return self.__used_pools
 
     def __create_free_pool(self):
         """
@@ -195,3 +197,4 @@ class Arena:
         for i in range(0, len(self.__used_pools)):
             if len(self.__used_pools[i].allocated_blocks) <= 0:
                 print(f"El almacen grande ha enviado todos los paquetes del palé {i + 1}")
+

@@ -4,16 +4,16 @@ import sys
 
 class Pool:
 
-    __pool_size = 96
-    __block_size = None
-    __class_idx = None
 
-    allocated_blocks = []
-    __free_blocks = []
-    __untouched_blocks = []
 
     def __init__(self):
-        pass
+        self.__pool_size = 96
+        self.__block_size = None
+        self.__class_idx = None
+
+        self.allocated_blocks = []
+        self.__free_blocks = []
+        self.__untouched_blocks = []
 
 
     def get_block_size(self):

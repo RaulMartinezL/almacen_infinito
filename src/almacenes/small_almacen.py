@@ -53,7 +53,7 @@ class Small_almacen:
 
     def status(self):
         """
-
+        imprime por pantalla la informacion del almacen pequeño
         :return:
         """
 

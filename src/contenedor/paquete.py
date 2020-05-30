@@ -3,13 +3,14 @@ import sys
 
 class Block:
 
-    __size = 0
-    __data = None
-    __clientes = []
-    __value_to_cast = None
+
 
     def __init__(self):
-        pass
+        self.__size = 0
+        self.__data = None
+        self.__clientes = []
+        self.__value_to_cast = None
+
     def set_data(self, data, cliente):
         """
         establecemos los datos que va a contener el paquete. Casteamos a str el contenido para guardar todos los datos
