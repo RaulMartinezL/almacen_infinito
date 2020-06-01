@@ -4,7 +4,6 @@ import sys
 class Block:
 
 
-
     def __init__(self):
         self.__size = 0
         self.__data = None
