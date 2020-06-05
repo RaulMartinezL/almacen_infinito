@@ -12,7 +12,6 @@ data = {"package_id": 0,
 '''
 
 
-
 class TAPNet:
 
     def __init__(self, ip, port, buffer_size, timeout, max_tries):
@@ -33,21 +32,16 @@ class TAPNet:
         package_data = str.encode(package_data)
         self.__hasheador.update(package_data)
 
-        chunks = [package_data[i:i+self.buffer_size] for i in range(0, len(package_data), self.buffer_size)]
+        chunks = [package_data[i:i + self.buffer_size] for i in range(0, len(package_data), self.buffer_size)]
 
         return chunks
-
-
 
     def send_package(self, message_type, data):
 
         tipo_mensaje_enviamos = self.__message_types.get(message_type)
         message = tipo_mensaje_enviamos(data)
 
-        self.__UDP_connection.sendto(message, (self.ip, self.port))
-
-
-
+        self.UDP_connection.sendto(message, (self.ip, self.port))
 
     def normal_message(self, data):
         message = int(1).to_bytes(4, 'little') + data["package_id"].to_bytes(4, 'little') + \
@@ -62,12 +56,17 @@ class TAPNet:
 
         return message
 
-
-
     def translate_package_to_data(self, data):
-        pass
+        message_type = int.from_bytes(data[0:3], ' little')
+        paquete_id = int.from_bytes(data[4:7], ' little')
 
+        if message_type == 0:
+            pass
+            # hacemos la conversion del mensaje ack
 
+        elif message_type == 1:
+            pass
+            # este mensaje tiene datos y vamos a ver cuales son.
 
     '''
     def guardar_paquete(self, paquete, cliente):
@@ -86,5 +85,5 @@ class TAPNet:
             client.sendto(c, (ip, port))
 
         # poder enviar paquetes garantizando que lleguen de forma integra, recepcionando un ACK
-        
+
     '''

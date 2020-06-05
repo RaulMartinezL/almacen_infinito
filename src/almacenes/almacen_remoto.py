@@ -1,8 +1,8 @@
 # server
 import hashlib
-from socket import socket, AF_INET, SOCK_DGRAM
 import sys
 
+from socket import socket, AF_INET, SOCK_DGRAM
 from src.network.TAPNet import TAPNet
 
 
@@ -68,12 +68,3 @@ if __name__ == '__main__':
     port = 9876
     almacen_remoto = Remote_almacen(ip, port, 2048, 1, 3)
     almacen_remoto.run()
-
-
-
-
-
-
-
-
-
