@@ -9,6 +9,8 @@ class Block:
         self.__data = None
         self.__clientes = []
         self.__value_to_cast = None
+        self.__id = None
+
 
     def set_data(self, data, cliente):
         """
@@ -21,6 +23,7 @@ class Block:
         self.__size = sys.getsizeof(data)
         self.__data = str(data)
         self.__value_to_cast = type(data)
+        self.__id = uuid4()
 
         clients_id = self.get_clients_id()
         if cliente.get_id() not in clients_id:
@@ -63,6 +66,11 @@ class Block:
             list_id_clientes.append(self.__clientes[i].get_id())
 
         return list_id_clientes
+
+
+    def get_id(self):
+
+        return self.__id
 
     def delete_owners(self):
         """

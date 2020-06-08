@@ -28,34 +28,67 @@ class Remote_almacen:
         self.lista_paquetes = []
 
 
-    def guardar_paquete(self, package, cliente):
-        pass
 
-        # verificar mediante SHA256 que los datos recibidos son los que nos han enviado
-        # si han llegado bien enviamos el ack de vuelta al remitente.
-        # los datos llegan mal, no enviaremos el ack correspopniente de manera que el remitente lo vuelva a enviar
+        # self.__almacenGrande = Big_almacen()
+
+
+    def guardar_paquete(self,  data):
+        ack = self.connection.ack_message(data)
+        self.connection.UDP_connection.sendto(ack, (self.ip, self.port))
+
+
+        hash_chunks = data['hash_chunks']
+        len_chunks = data['len_chunk']
+        id_paquete = data['id_paquete']
+        cliente = data['cliente']
+
+
+        while 1:
+
+            # si han llegado bien enviamos el ack de vuelta al remitente.
+            # los datos llegan mal, no enviaremos el ack correspopniente de manera que el remitente lo vuelva a enviar
+
+
+
+            data, address = self.connection.UDP_connection.recvfrom(self.buffer_size)
+
+            # verificar mediante SHA256 que los datos recibidos son los que nos han enviado
+            data = self.connection.translate_package_to_data(data)
+
+            pacakge_id = self.data['package_id']
+            subpackage_id = self.data['subpackage_id']
+            subpackage_num = self.data['subpackage_num']
+            chunk = self.data['chunk']
+            subpackage_hash = self.data['subpackage_hash']
+
+
+    def recoger_paquete(self, package, cliente):
+        pass
 
 
     def run(self):
 
         while 1:
-            #recibimos un paquete del cliente
+            # recibimos un paquete del cliente
             data, address = self.connection.UDP_connection.recvfrom(self.buffer_size)
 
+            # hay que comprobar que es lo que queremos hacer. Guardar o Recoger un paquete.
             data = self.connection.translate_package_to_data(data)
 
-            #verificamos que los datos recibidos son correctos
+            if data['primer_mensaje'] == 24:
+                self.guardar_paquete(data)
 
 
-            #si son correctos enviamos un ack correspondiente al subpaquete
+            if data['primer_mensaje'] == 42:
+                self.recoger_paquete()
 
-            #si no son correctos no enviamos el ack correspondiente
+                # devolvemos okay, buscamos el paquete y lo devolvemos
+
+
 
     def insert_package(self, data):
 
         pass
-
-
 
 
 
@@ -68,3 +101,5 @@ if __name__ == '__main__':
     port = 9876
     almacen_remoto = Remote_almacen(ip, port, 2048, 1, 3)
     almacen_remoto.run()
+
+

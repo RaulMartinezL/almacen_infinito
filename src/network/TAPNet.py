@@ -2,15 +2,6 @@ from socket import socket, AF_INET, SOCK_DGRAM, SOCK_STREAM
 from time import sleep
 import hashlib
 
-''' 
-data = {"package_id": 0,
-                "subpackage_id": 0,
-                "subpackage_num": 0,
-                "subpackage_hash": self.__hasheador,
-                "datos_en_si": null
-                }
-'''
-
 
 class TAPNet:
 
@@ -27,26 +18,44 @@ class TAPNet:
         self.UDP_connection = socket(AF_INET, SOCK_DGRAM)
         self.UDP_connection.bind((self.ip, self.port))
 
-    def make_chunks(self, package):
-        package_data = str(package.get_data())
-        package_data = str.encode(package_data)
+    def digest(self):
+        return self.__hasheador.digest()
+
+    def make_chunks(self, datos):
+        package_data = str.encode(datos)
         self.__hasheador.update(package_data)
 
         chunks = [package_data[i:i + self.buffer_size] for i in range(0, len(package_data), self.buffer_size)]
 
         return chunks
 
-    def send_package(self, message_type, data):
+    def send_package(self, message_type, paquete):
 
         tipo_mensaje_enviamos = self.__message_types.get(message_type)
-        message = tipo_mensaje_enviamos(data)
+        message = tipo_mensaje_enviamos(paquete)
 
         self.UDP_connection.sendto(message, (self.ip, self.port))
 
     def normal_message(self, data):
+        for key, value in data.items():
+            print(key, value)
+
+        if data['primer_mensaje'] is not None:
+            # creamos el primer mensaje
+            message = int(1).to_bytes(4, 'little') + data['id_paquete'].to_bytes(4, 'little') + \
+                      data['primer_mensaje'].to_bytes(4, 'little')
+
+            # si existe esta key en el diccionario quiere decir que vamos a guardar el paquete si no existe es que
+            # vamos a sacar el paquete
+            if data['hash_chunks']:
+                message = message + data['len_chunk'].to_bytes(4, 'little') + data['cliente'].to_bytes(4, 'little') + \
+                          data['hash_chunks']  # hash_chunks son bytes. Mide 32
+
+            return message
+
         message = int(1).to_bytes(4, 'little') + data["package_id"].to_bytes(4, 'little') + \
-                  data["subpackage_hash"] + data["subpackage_num"].to_bytes(4, 'little') + \
-                  data["subpackage_id"].to_bytes(4, 'little')
+                  data["subpackage_id"].to_bytes(4, "little") + data["subpackage_num"].to_bytes(4, 'little') + \
+                  data["subpackage_hash"] # subpackage_hash tambien van a ser bytes. Mide 32
 
         return message
 
@@ -57,16 +66,69 @@ class TAPNet:
         return message
 
     def translate_package_to_data(self, data):
-        message_type = int.from_bytes(data[0:3], ' little')
-        paquete_id = int.from_bytes(data[4:7], ' little')
+        dict_to_return = {}
+
+        data = data[0]
+        print("data 0")
+        print(data)
+
+        message_type = int.from_bytes(data[0:3], 'little')
+        paquete_id = int.from_bytes(data[4:7], 'little')
+
+        # subpackage_id = int.from_bytes(data[8:11], 'little')
 
         if message_type == 0:
-            pass
-            # hacemos la conversion del mensaje ack
+            primer_mensaje = int.from_bytes(data[8:11], 'little')
+
+            # queremos guardar el paquete y este es el primer mensaje
+            if primer_mensaje == 24:
+                len_chunks = int.from_bytes(data[12:15], 'little')
+                cliente = int.from_bytes(data[16:19], 'little')
+                hash_chunks = int.from_bytes(data[20:51], 'little')
+
+                dict_to_return['message_type'] = message_type
+                dict_to_return['paquete_id'] = paquete_id
+                dict_to_return['primer_mensaje'] = primer_mensaje
+                dict_to_return['hash_chunks'] = hash_chunks
+                dict_to_return['len_chunks'] = len_chunks
+                dict_to_return['cliente'] = cliente
+
+                return dict_to_return
+
+            # queremos sacar el paquete y este es el primer mensaje
+            elif primer_mensaje == 42:
+                dict_to_return['message_type'] = message_type
+                dict_to_return['paquete_id'] = paquete_id
+
+                return dict_to_return
+
+            # comportamiento normal a partir del primer mensaje
+            else:
+                pass
+
+                subpackage_num = int.from_bytes(data[12:15], 'little')
+                subpackage_hash = int.from_bytes(data[16:47], 'little')
+
+                dict_to_return['message_type'] = message_type
+                dict_to_return['paquete_id'] = paquete_id
+                dict_to_return['subpackage_id'] = subpackage_id
+                dict_to_return['subpackage_num'] = subpackage_num
+                dict_to_return['subpackage_hash'] = subpackage_hash
+
 
         elif message_type == 1:
-            pass
-            # este mensaje tiene datos y vamos a ver cuales son.
+
+            dict_to_return['message_type'] = message_type
+            dict_to_return['paquete_id'] = paquete_id
+
+            return dict_to_return
+
+    def guardar_objeto(self, paquete):
+
+        pass
+
+    def recuperar_objet(self):
+        pass
 
     '''
     def guardar_paquete(self, paquete, cliente):

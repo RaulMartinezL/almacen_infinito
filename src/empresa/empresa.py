@@ -1,8 +1,15 @@
 import sys
 from ..almacenes.big_almacen import Big_almacen
 from ..almacenes.small_almacen import Small_almacen
+from ..network.TAPNet import TAPNet
 from ..contenedor.paquete import Block
 from .cliente import Cliente
+from uuid import uuid4
+import hashlib
+
+
+ACK = 0
+NORMAL = 1
 
 
 class Empresa:
@@ -12,8 +19,24 @@ class Empresa:
     __clientes = []
 
     def __init__(self):
+        self.ip = '0.0.0.0'
+        self.port = 9877
+        self.buffer_size = 2048
+        self.time_out = 1
+        self.max_tries = 3
+        self.__comunicacion_TAPNET = TAPNet(self.ip, self.port, self.buffer_size, self.time_out, self.max_tries)
+
         self.__almacenGrande = Big_almacen()
         self.__almacenPequeno = Small_almacen()
+        self.data = {"package_id": None,
+                     "subpackage_id": None,
+                     "subpackage_num": None,
+                     "subpackage_hash": None,
+                     "chunk": None,
+                     "primer_mensaje": None  # 24 para guardar paquete, 42 para recoger paquete
+                     }
+
+        self.__hasheador = hashlib.sha256()
 
     def guardar_objeto(self, objeto, client):
         """
@@ -31,10 +54,51 @@ class Empresa:
         if size_object <= 32:
             return self.__almacenPequeno.guardar_paquete(objeto, client)
         else:
-            return self.__almacenGrande.guardar_paquete(objeto, client)
+
+            # miramos los datos
+            print(objeto)
+            datos_objeto = objeto
+            cliente = client.get_id()
+            print(cliente)
+            # id_objeto = objeto.get_id()
+
+            # lo divido en chunks
+            chunks = self.__comunicacion_TAPNET.make_chunks(datos_objeto)
+
+            print(chunks)
+
+            data = {'primer_mensaje': 24,
+                    'hash_chunks': self.__comunicacion_TAPNET.digest(),
+                    'len_chunk': len(chunks),
+                    'id_paquete': 6,
+                    'cliente': 33}
+
+            # crear el primer mensaje
+            self.__comunicacion_TAPNET.send_package(NORMAL, data)
+            ack = self.__comunicacion_TAPNET.UDP_connection.recvfrom(self.buffer_size)
+
+            print(ack[0])
+
+            primer_mensaje_vuelta = self.__comunicacion_TAPNET.translate_package_to_data(ack)
+
+            if primer_mensaje_vuelta['message_type']:
+                # envio mensaje
+                for i in range(0, len(chunks)):
+                    chunk_a_enviar = chunks[i]
+                    self.__hasheador.update(chunk_a_enviar)
+
+                    self.data['package_id'] = 1
+                    self.data['subpackage_id'] = i
+                    self.data['subpackage_num'] = len(chunks)
+                    self.data['chunk'] = chunk_a_enviar
+                    self.data['subpackage_hash'] = self.__hasheador.digest()
+
+                    self.__comunicacion_TAPNET.send_package(NORMAL, self.data)
+
+            # return self.__almacenGrande.guardar_paquete(objeto, client)
 
     def recuperar_objeto(self, id_paquete, client):
-        """"
+        """
 
         """
         list_id_clientes = []
