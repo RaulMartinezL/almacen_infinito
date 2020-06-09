@@ -55,7 +55,9 @@ class TAPNet:
 
         message = int(1).to_bytes(4, 'little') + data["package_id"].to_bytes(4, 'little') + \
                   data["subpackage_id"].to_bytes(4, "little") + data["subpackage_num"].to_bytes(4, 'little') + \
-                  data["subpackage_hash"] # subpackage_hash tambien van a ser bytes. Mide 32
+                  data["subpackage_hash"]# subpackage_hash tambien van a ser bytes. Mide 32
+
+        message = message + data['subpackage']
 
         return message
 
@@ -105,15 +107,17 @@ class TAPNet:
             # comportamiento normal a partir del primer mensaje
             else:
                 pass
+                subpackage_id = int.from_bytes(data[12:15], 'little')
+                subpackage_num = int.from_bytes(data[16:20], 'little')
+                subpackage_hash = int.from_bytes(data[21:52], 'little')
 
-                subpackage_num = int.from_bytes(data[12:15], 'little')
-                subpackage_hash = int.from_bytes(data[16:47], 'little')
 
                 dict_to_return['message_type'] = message_type
                 dict_to_return['paquete_id'] = paquete_id
                 dict_to_return['subpackage_id'] = subpackage_id
                 dict_to_return['subpackage_num'] = subpackage_num
                 dict_to_return['subpackage_hash'] = subpackage_hash
+                dict_to_return['subpackage'] = subpackage
 
 
         elif message_type == 1:

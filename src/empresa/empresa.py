@@ -85,12 +85,14 @@ class Empresa:
                 # envio mensaje
                 for i in range(0, len(chunks)):
                     chunk_a_enviar = chunks[i]
+                    print("chunk A ENVIAR")
+                    print(chunk_a_enviar)
                     self.__hasheador.update(chunk_a_enviar)
 
                     self.data['package_id'] = 1
                     self.data['subpackage_id'] = i
                     self.data['subpackage_num'] = len(chunks)
-                    self.data['chunk'] = chunk_a_enviar
+                    self.data['subpackage'] = chunk_a_enviar
                     self.data['subpackage_hash'] = self.__hasheador.digest()
 
                     self.__comunicacion_TAPNET.send_package(NORMAL, self.data)

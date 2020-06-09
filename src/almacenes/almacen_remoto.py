@@ -43,23 +43,30 @@ class Remote_almacen:
         cliente = data['cliente']
 
 
+        # falta comprobar el numero de subpaquetes que nos van a enviar
+        #
+
+
         while 1:
-
-            # si han llegado bien enviamos el ack de vuelta al remitente.
-            # los datos llegan mal, no enviaremos el ack correspopniente de manera que el remitente lo vuelva a enviar
-
-
-
             data, address = self.connection.UDP_connection.recvfrom(self.buffer_size)
-
-            # verificar mediante SHA256 que los datos recibidos son los que nos han enviado
             data = self.connection.translate_package_to_data(data)
 
-            pacakge_id = self.data['package_id']
-            subpackage_id = self.data['subpackage_id']
-            subpackage_num = self.data['subpackage_num']
-            chunk = self.data['chunk']
-            subpackage_hash = self.data['subpackage_hash']
+            pacakge_id = data['package_id']
+            subpackage_id = data['subpackage_id']
+            subpackage_num = data['subpackage_num']
+            subpackage_hash = data['subpackage_hash']
+            subpackage = data['subpackage']
+
+
+            # verificar mediante SHA256 que los datos recibidos son los que nos han enviado
+            self.__hasheador.update(subpackage)
+            check_subpackage = self.__hasheador.digest()
+            if subpackage_hash == check_subpackage:
+                # enviamos ack de vuelta OK
+                pass
+            else:
+                # enviamos ack de vuelta NOT OK
+                pass
 
 
     def recoger_paquete(self, package, cliente):
