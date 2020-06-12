@@ -29,12 +29,12 @@ class TAPNet:
 
         return chunks
 
-    def send_package(self, message_type, paquete):
+    def send_package(self, message_type, paquete, ip, puerto):
 
         tipo_mensaje_enviamos = self.__message_types.get(message_type)
         message = tipo_mensaje_enviamos(paquete)
 
-        self.UDP_connection.sendto(message, (self.ip, self.port))
+        self.UDP_connection.sendto(message, (ip, puerto))
 
     def normal_message(self, data):
         for key, value in data.items():
@@ -42,18 +42,18 @@ class TAPNet:
 
         if data['primer_mensaje'] is not None:
             # creamos el primer mensaje
-            message = int(1).to_bytes(4, 'little') + data['id_paquete'].to_bytes(4, 'little') + \
+            message = int(1).to_bytes(4, 'little') + data['paquete_id'].to_bytes(4, 'little') + \
                       data['primer_mensaje'].to_bytes(4, 'little')
 
             # si existe esta key en el diccionario quiere decir que vamos a guardar el paquete si no existe es que
             # vamos a sacar el paquete
             if data['hash_chunks']:
-                message = message + data['len_chunk'].to_bytes(4, 'little') + data['cliente'].to_bytes(4, 'little') + \
+                message = message + data['len_chunks'].to_bytes(4, 'little') + data['cliente'].to_bytes(4, 'little') + \
                           data['hash_chunks']  # hash_chunks son bytes. Mide 32
 
             return message
 
-        message = int(1).to_bytes(4, 'little') + data["package_id"].to_bytes(4, 'little') + \
+        message = int(1).to_bytes(4, 'little') + data["paquete_id"].to_bytes(4, 'little') + \
                   data["subpackage_id"].to_bytes(4, "little") + data["subpackage_num"].to_bytes(4, 'little') + \
                   data["subpackage_hash"]# subpackage_hash tambien van a ser bytes. Mide 32
 
@@ -62,24 +62,22 @@ class TAPNet:
         return message
 
     def ack_message(self, data):
-        message = int(0).to_bytes(4, 'little') + data["package_id"].to_bytes(4, 'little') + \
-                  data["subpackage_id"].to_bytes(4, 'little')
+        message = int(0).to_bytes(4, 'little') + data["paquete_id"].to_bytes(4, 'little')
+
+        if "subpackage_id" in data:
+            message = message + data["subpackage_id"].to_bytes(4, 'little')
 
         return message
 
     def translate_package_to_data(self, data):
         dict_to_return = {}
 
-        data = data[0]
-        print("data 0")
-        print(data)
-
         message_type = int.from_bytes(data[0:3], 'little')
         paquete_id = int.from_bytes(data[4:7], 'little')
 
         # subpackage_id = int.from_bytes(data[8:11], 'little')
 
-        if message_type == 0:
+        if message_type == 1:
             primer_mensaje = int.from_bytes(data[8:11], 'little')
 
             # queremos guardar el paquete y este es el primer mensaje
@@ -106,11 +104,12 @@ class TAPNet:
 
             # comportamiento normal a partir del primer mensaje
             else:
-                pass
                 subpackage_id = int.from_bytes(data[12:15], 'little')
                 subpackage_num = int.from_bytes(data[16:20], 'little')
                 subpackage_hash = int.from_bytes(data[21:52], 'little')
 
+                print(data[53:len(data)])
+                subpackage = data[53:len(data)]
 
                 dict_to_return['message_type'] = message_type
                 dict_to_return['paquete_id'] = paquete_id
@@ -119,8 +118,10 @@ class TAPNet:
                 dict_to_return['subpackage_hash'] = subpackage_hash
                 dict_to_return['subpackage'] = subpackage
 
+                return dict_to_return
 
-        elif message_type == 1:
+
+        elif message_type == 0:
 
             dict_to_return['message_type'] = message_type
             dict_to_return['paquete_id'] = paquete_id

@@ -23,7 +23,7 @@ class Remote_almacen:
         self.max_tries = max_tries
         self.__hasheador = hashlib.sha256()
 
-        self.connection = TAPNet(ip, port, buffer_size, timeout, max_tries)
+        self.connection = TAPNet(self.ip, self.port, self.buffer_size, self.timeout, self.max_tries)
 
         self.lista_paquetes = []
 
@@ -33,13 +33,15 @@ class Remote_almacen:
 
 
     def guardar_paquete(self,  data):
+
+        print(data)
         ack = self.connection.ack_message(data)
-        self.connection.UDP_connection.sendto(ack, (self.ip, self.port))
+        self.connection.UDP_connection.sendto(ack, ('0.0.0.0', 9877))
 
 
         hash_chunks = data['hash_chunks']
-        len_chunks = data['len_chunk']
-        id_paquete = data['id_paquete']
+        len_chunks = data['len_chunks']
+        id_paquete = data['paquete_id']
         cliente = data['cliente']
 
 
@@ -49,9 +51,13 @@ class Remote_almacen:
 
         while 1:
             data, address = self.connection.UDP_connection.recvfrom(self.buffer_size)
+            print(data)
             data = self.connection.translate_package_to_data(data)
 
-            pacakge_id = data['package_id']
+
+            print(data)
+
+            pacakge_id = data['paquete_id']
             subpackage_id = data['subpackage_id']
             subpackage_num = data['subpackage_num']
             subpackage_hash = data['subpackage_hash']
@@ -76,17 +82,23 @@ class Remote_almacen:
     def run(self):
 
         while 1:
+            print("while 1")
             # recibimos un paquete del cliente
             data, address = self.connection.UDP_connection.recvfrom(self.buffer_size)
 
+            print(data)
+
             # hay que comprobar que es lo que queremos hacer. Guardar o Recoger un paquete.
-            data = self.connection.translate_package_to_data(data)
+            data_translated = self.connection.translate_package_to_data(data)
 
-            if data['primer_mensaje'] == 24:
-                self.guardar_paquete(data)
+            print(data_translated)
+
+            if data_translated['primer_mensaje'] == 24:
+                print("primer mensaje 24")
+                self.guardar_paquete(data_translated)
 
 
-            if data['primer_mensaje'] == 42:
+            if data_translated['primer_mensaje'] == 42:
                 self.recoger_paquete()
 
                 # devolvemos okay, buscamos el paquete y lo devolvemos

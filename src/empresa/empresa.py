@@ -28,7 +28,7 @@ class Empresa:
 
         self.__almacenGrande = Big_almacen()
         self.__almacenPequeno = Small_almacen()
-        self.data = {"package_id": None,
+        self.data = {"paquete_id": None,
                      "subpackage_id": None,
                      "subpackage_num": None,
                      "subpackage_hash": None,
@@ -69,19 +69,22 @@ class Empresa:
 
             data = {'primer_mensaje': 24,
                     'hash_chunks': self.__comunicacion_TAPNET.digest(),
-                    'len_chunk': len(chunks),
-                    'id_paquete': 6,
+                    'len_chunks': len(chunks),
+                    'paquete_id': 6,
                     'cliente': 33}
 
             # crear el primer mensaje
-            self.__comunicacion_TAPNET.send_package(NORMAL, data)
+            self.__comunicacion_TAPNET.send_package(NORMAL, data, '0.0.0.0', 9876)
             ack = self.__comunicacion_TAPNET.UDP_connection.recvfrom(self.buffer_size)
 
+            print("hemos recibido de vuelta el ack")
             print(ack[0])
 
-            primer_mensaje_vuelta = self.__comunicacion_TAPNET.translate_package_to_data(ack)
+            primer_mensaje_vuelta = self.__comunicacion_TAPNET.translate_package_to_data([0])
 
-            if primer_mensaje_vuelta['message_type']:
+            print(primer_mensaje_vuelta)
+
+            if primer_mensaje_vuelta['message_type'] == 0:
                 # envio mensaje
                 for i in range(0, len(chunks)):
                     chunk_a_enviar = chunks[i]
@@ -89,13 +92,15 @@ class Empresa:
                     print(chunk_a_enviar)
                     self.__hasheador.update(chunk_a_enviar)
 
-                    self.data['package_id'] = 1
+                    self.data['paquete_id'] = 1
                     self.data['subpackage_id'] = i
                     self.data['subpackage_num'] = len(chunks)
                     self.data['subpackage'] = chunk_a_enviar
                     self.data['subpackage_hash'] = self.__hasheador.digest()
 
-                    self.__comunicacion_TAPNET.send_package(NORMAL, self.data)
+                    print("aqui estoy compraobando el subpackage id")
+                    print(self.data)
+                    self.__comunicacion_TAPNET.send_package(NORMAL, self.data, '0.0.0.0', 9876)
 
             # return self.__almacenGrande.guardar_paquete(objeto, client)
 
