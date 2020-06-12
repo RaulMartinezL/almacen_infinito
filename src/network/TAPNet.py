@@ -84,7 +84,8 @@ class TAPNet:
             if primer_mensaje == 24:
                 len_chunks = int.from_bytes(data[12:15], 'little')
                 cliente = int.from_bytes(data[16:19], 'little')
-                hash_chunks = int.from_bytes(data[20:51], 'little')
+                # hash_chunks = int.from_bytes(data[20:], 'little')
+                hash_chunks = data[20:]
 
                 dict_to_return['message_type'] = message_type
                 dict_to_return['paquete_id'] = paquete_id
@@ -93,23 +94,20 @@ class TAPNet:
                 dict_to_return['len_chunks'] = len_chunks
                 dict_to_return['cliente'] = cliente
 
-                return dict_to_return
-
             # queremos sacar el paquete y este es el primer mensaje
             elif primer_mensaje == 42:
                 dict_to_return['message_type'] = message_type
                 dict_to_return['paquete_id'] = paquete_id
 
-                return dict_to_return
-
             # comportamiento normal a partir del primer mensaje
             else:
-                subpackage_id = int.from_bytes(data[12:15], 'little')
-                subpackage_num = int.from_bytes(data[16:20], 'little')
-                subpackage_hash = int.from_bytes(data[21:52], 'little')
+                subpackage_id = int.from_bytes(data[8:11], 'little')
+                subpackage_num = int.from_bytes(data[12:15], 'little')
+                # subpackage_hash = int.from_bytes(data[21:52], 'little')
+                subpackage_hash = data[16:48]
 
-                print(data[53:len(data)])
-                subpackage = data[53:len(data)]
+                print(data)
+                subpackage = data[48:]
 
                 dict_to_return['message_type'] = message_type
                 dict_to_return['paquete_id'] = paquete_id
@@ -118,15 +116,12 @@ class TAPNet:
                 dict_to_return['subpackage_hash'] = subpackage_hash
                 dict_to_return['subpackage'] = subpackage
 
-                return dict_to_return
-
-
         elif message_type == 0:
 
             dict_to_return['message_type'] = message_type
             dict_to_return['paquete_id'] = paquete_id
 
-            return dict_to_return
+        return dict_to_return
 
     def guardar_objeto(self, paquete):
 

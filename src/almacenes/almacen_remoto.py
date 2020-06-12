@@ -5,11 +5,10 @@ import sys
 from socket import socket, AF_INET, SOCK_DGRAM
 from src.network.TAPNet import TAPNet
 
+from big_almacen import Big_almacen
 
 ACK = 0
 NORMAL = 1
-
-
 
 
 class Remote_almacen:
@@ -26,58 +25,57 @@ class Remote_almacen:
         self.connection = TAPNet(self.ip, self.port, self.buffer_size, self.timeout, self.max_tries)
 
         self.lista_paquetes = []
+        self.lista_paquetes_hash = []
 
+        self.__almacenGrande = Big_almacen()
 
-
-        # self.__almacenGrande = Big_almacen()
-
-
-    def guardar_paquete(self,  data):
-
-        print(data)
-        ack = self.connection.ack_message(data)
-        self.connection.UDP_connection.sendto(ack, ('0.0.0.0', 9877))
-
-
+    def guardar_paquete(self, data):
         hash_chunks = data['hash_chunks']
         len_chunks = data['len_chunks']
         id_paquete = data['paquete_id']
         cliente = data['cliente']
 
+        ack = self.connection.ack_message(data)
+        self.connection.UDP_connection.sendto(ack, ('0.0.0.0', 9877))
 
         # falta comprobar el numero de subpaquetes que nos van a enviar
-        #
-
 
         while 1:
             data, address = self.connection.UDP_connection.recvfrom(self.buffer_size)
-            print(data)
-            data = self.connection.translate_package_to_data(data)
+            data_translated = self.connection.translate_package_to_data(data)
 
-
-            print(data)
-
-            pacakge_id = data['paquete_id']
-            subpackage_id = data['subpackage_id']
-            subpackage_num = data['subpackage_num']
-            subpackage_hash = data['subpackage_hash']
-            subpackage = data['subpackage']
-
+            pacakge_id = data_translated['paquete_id']
+            subpackage_id = data_translated['subpackage_id']
+            subpackage_num = data_translated['subpackage_num']
+            subpackage_hash = data_translated['subpackage_hash']
+            subpackage = data_translated['subpackage']
 
             # verificar mediante SHA256 que los datos recibidos son los que nos han enviado
             self.__hasheador.update(subpackage)
             check_subpackage = self.__hasheador.digest()
+
             if subpackage_hash == check_subpackage:
-                # enviamos ack de vuelta OK
-                pass
+                # si hemos recivido bien el subpackage
+                self.lista_paquetes.append(subpackage)
+                self.lista_paquetes_hash.append(subpackage_hash)
+
+                hash_entero = b''.join(self.lista_paquetes_hash)
+
+                if hash_chunks == hash_entero:
+                    # guardamos el paquete y devolvemos un ack de stop.
+
+                    paquete_in_bytes = b''.join(self.lista_paquetes)
+                    paquete = paquete_in_bytes.decode("utf-8")
+                    print("guardamos en el almacen")
+                    print(paquete)
+                    self.__almacenGrande.guardar_paquete(paquete, cliente)
+
             else:
                 # enviamos ack de vuelta NOT OK
                 pass
 
-
     def recoger_paquete(self, package, cliente):
         pass
-
 
     def run(self):
 
@@ -97,28 +95,18 @@ class Remote_almacen:
                 print("primer mensaje 24")
                 self.guardar_paquete(data_translated)
 
-
             if data_translated['primer_mensaje'] == 42:
                 self.recoger_paquete()
 
                 # devolvemos okay, buscamos el paquete y lo devolvemos
-
-
 
     def insert_package(self, data):
 
         pass
 
 
-
-
-
-
 if __name__ == '__main__':
-
     ip = '0.0.0.0'
     port = 9876
     almacen_remoto = Remote_almacen(ip, port, 2048, 1, 3)
     almacen_remoto.run()
-
-

@@ -32,7 +32,7 @@ class Empresa:
                      "subpackage_id": None,
                      "subpackage_num": None,
                      "subpackage_hash": None,
-                     "chunk": None,
+                     "subpackage": None,
                      "primer_mensaje": None  # 24 para guardar paquete, 42 para recoger paquete
                      }
 
