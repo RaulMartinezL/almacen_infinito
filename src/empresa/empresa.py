@@ -6,6 +6,7 @@ from ..contenedor.paquete import Block
 from .cliente import Cliente
 from uuid import uuid4
 import hashlib
+import random
 
 
 ACK = 0
@@ -56,11 +57,9 @@ class Empresa:
         else:
 
             # miramos los datos
-            print(objeto)
             datos_objeto = objeto
             cliente = client.get_id()
-            print(cliente)
-            # id_objeto = objeto.get_id()
+            id_objeto = random.getrandbits(32)
 
             # lo divido en chunks
             chunks = self.__comunicacion_TAPNET.make_chunks(datos_objeto)
@@ -70,8 +69,8 @@ class Empresa:
             data = {'primer_mensaje': 24,
                     'hash_chunks': self.__comunicacion_TAPNET.digest(),
                     'len_chunks': len(chunks),
-                    'paquete_id': 6,
-                    'cliente': 33}
+                    'paquete_id': id_objeto,
+                    'cliente': cliente}
 
             # crear el primer mensaje
             self.__comunicacion_TAPNET.send_package(NORMAL, data, '0.0.0.0', 9876)

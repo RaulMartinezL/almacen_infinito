@@ -1,16 +1,16 @@
-from uuid import uuid4
+import random
 
 
 class Cliente:
     """
     Cliente de la empresa de almacenamiento
     """
-    __id = None
-    __name = None
+    dict_data = {}
 
     def __init__(self, name: str):
         self.__name = name
-        self.__id = uuid4()
+        self.__id = random.getrandbits(32)
+        self.dict_data[self.__id] = self.__name
 
     def get_id(self):
         """

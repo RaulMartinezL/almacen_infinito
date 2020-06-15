@@ -68,6 +68,7 @@ class Remote_almacen:
                     paquete = paquete_in_bytes.decode("utf-8")
                     print("guardamos en el almacen")
                     print(paquete)
+                    print(cliente)
                     self.__almacenGrande.guardar_paquete(paquete, cliente)
 
             else:
