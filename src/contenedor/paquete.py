@@ -9,8 +9,9 @@ class Block:
         self.__data = None
         self.__clientes = {}
         self.__value_to_cast = None
+        self.__ids = []
 
-    def set_data(self, data, cliente):
+    def set_data(self, data, cliente, id_paquete):
         """
         establecemos los datos que va a contener el paquete. Casteamos a str el contenido para guardar todos los datos
         como string. self.__value_to_cast contiene el tipo de dato que era :param data: antes de castearlo a string.
@@ -21,6 +22,7 @@ class Block:
         self.__size = sys.getsizeof(data)
         self.__data = str(data)
         self.__value_to_cast = type(data)
+        self.__ids.append(id_paquete)
         self.__add_client(cliente)
 
     def __add_client(self, cliente):
@@ -77,3 +79,8 @@ class Block:
         :return:
         """
         self.__clientes = []
+
+
+    def get_id_paquete(self):
+
+        return self.__ids

@@ -30,6 +30,7 @@ class Remote_almacen:
         self.__almacenGrande = Big_almacen()
 
     def guardar_paquete(self, data):
+
         hash_chunks = data['hash_chunks']
         len_chunks = data['len_chunks']
         id_paquete = data['paquete_id']
@@ -40,70 +41,76 @@ class Remote_almacen:
 
         # falta comprobar el numero de subpaquetes que nos van a enviar
 
-        while 1:
-            data, address = self.connection.UDP_connection.recvfrom(self.buffer_size)
-            data_translated = self.connection.translate_package_to_data(data)
 
-            pacakge_id = data_translated['paquete_id']
-            subpackage_id = data_translated['subpackage_id']
-            subpackage_num = data_translated['subpackage_num']
-            subpackage_hash = data_translated['subpackage_hash']
-            subpackage = data_translated['subpackage']
+        for i in range(0, len_chunks):
+            j = 0
+            while j <= 3:
 
-            # verificar mediante SHA256 que los datos recibidos son los que nos han enviado
-            self.__hasheador.update(subpackage)
-            check_subpackage = self.__hasheador.digest()
+                data, address = self.connection.UDP_connection.recvfrom(self.buffer_size)
+                data_translated = self.connection.translate_package_to_data(data)
 
-            if subpackage_hash == check_subpackage:
-                # si hemos recivido bien el subpackage
-                self.lista_paquetes.append(subpackage)
-                self.lista_paquetes_hash.append(subpackage_hash)
+                package_id = data_translated['paquete_id']
+                subpackage_id = data_translated['subpackage_id']
+                subpackage_num = data_translated['subpackage_num']
+                subpackage_hash = data_translated['subpackage_hash']
+                subpackage = data_translated['subpackage']
 
-                hash_entero = b''.join(self.lista_paquetes_hash)
+                # verificar mediante SHA256 que los datos recibidos son los que nos han enviado
+                self.__hasheador.update(subpackage)
+                check_subpackage = self.__hasheador.digest()
 
-                if hash_chunks == hash_entero:
-                    # guardamos el paquete y devolvemos un ack de stop.
+                if subpackage_hash == check_subpackage:
+                    # si hemos recibido bien el subpackage
+                    self.lista_paquetes.append(subpackage)
+                    self.lista_paquetes_hash.append(subpackage_hash)
+                    #actualizamos el hash de todos los paquetes con el nuevo que nos acaba de llegar
+                    hash_entero = b''.join(self.lista_paquetes_hash)
 
-                    paquete_in_bytes = b''.join(self.lista_paquetes)
-                    paquete = paquete_in_bytes.decode("utf-8")
-                    print("guardamos en el almacen")
-                    print(paquete)
-                    print(cliente)
-                    self.__almacenGrande.guardar_paquete(paquete, cliente)
+                    print(hash_chunks)
+                    print(hash_entero)
+                    if hash_chunks == hash_entero:
+                        # guardamos el paquete
+                        paquete_in_bytes = b''.join(self.lista_paquetes)
+                        paquete = paquete_in_bytes.decode("utf-8")
+                        print("guardamos en el almacen")
+                        print(paquete)
+                        print(cliente)
+                        self.__almacenGrande.guardar_paquete(paquete, cliente, package_id)
+                        hash_entero = bytearray()
+                        break
 
-            else:
-                # enviamos ack de vuelta NOT OK
-                pass
+                    j += 1
+                    break
 
-    def recoger_paquete(self, package, cliente):
-        pass
+
+
+    def recoger_paquete(self, data_translated):
+
+
+
+
+
+
+
+        object_to_return = self.__almacenGrande.recuperar_paquete(id, cliente)
 
     def run(self):
 
         while 1:
-            print("while 1")
+            print("estmos bien ")
             # recibimos un paquete del cliente
             data, address = self.connection.UDP_connection.recvfrom(self.buffer_size)
 
-            print(data)
-
             # hay que comprobar que es lo que queremos hacer. Guardar o Recoger un paquete.
             data_translated = self.connection.translate_package_to_data(data)
-
-            print(data_translated)
 
             if data_translated['primer_mensaje'] == 24:
                 print("primer mensaje 24")
                 self.guardar_paquete(data_translated)
 
             if data_translated['primer_mensaje'] == 42:
-                self.recoger_paquete()
+                self.recoger_paquete(data_translated)
 
-                # devolvemos okay, buscamos el paquete y lo devolvemos
-
-    def insert_package(self, data):
-
-        pass
 
 
 if __name__ == '__main__':

@@ -1,5 +1,6 @@
 from src.contenedor import contenedor as contenedor
 import sys
+import random
 
 
 class Small_almacen:
@@ -24,11 +25,13 @@ class Small_almacen:
         :return:
         """
 
+        id_paquete = random.getrandbits(32)
+
         # buscamos si existe un pool del tamaño adecuado en los contenedores que hay actualmente creados.
         for i in range(0, len(self.__used_containers)):
             # si existe espacio en el contenedor, insertamos el paquete.
             if self.__used_containers[i].is_not_full():
-                return self.__used_containers[i].add_package(package, cliente)
+                return self.__used_containers[i].add_package(package, cliente, id_paquete)
 
         # si llegamos a este punto, quiere decir que no existe un pale del tamaño de paquete necesario para meter
         # nuestro paquete o los contenedores estám llenos, asique creamos un contenedor nuevo y volvemos a llamar a
@@ -36,7 +39,7 @@ class Small_almacen:
         self.__create__container()
         return self.guardar_paquete(package, cliente)
 
-    def recuperar_paquete(self, data_package, client):
+    def recuperar_paquete(self, id_paquete, client):
         """
 
         :return:
@@ -44,10 +47,10 @@ class Small_almacen:
         paquete = None
 
         for i in range(0, len(self.__used_containers)):
-            paquete = self.__used_containers[i].get_package(data_package, client)
+            paquete = self.__used_containers[i].get_package(id_paquete, client)
 
         if paquete is None:
-            return "el paquete no está en este almacen o el dueño no coincide"
+            return "no es este warehouse"
         else:
             return paquete
 

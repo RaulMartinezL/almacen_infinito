@@ -61,47 +61,37 @@ class Empresa:
             cliente = client.get_id()
             id_objeto = random.getrandbits(32)
 
-            # lo divido en chunks
+            # dividimos en chunks de 2048 bits
             chunks = self.__comunicacion_TAPNET.make_chunks(datos_objeto)
 
-            print(chunks)
-
+            # preparamos el primer mensaje para guardar un paquete
             data = {'primer_mensaje': 24,
                     'hash_chunks': self.__comunicacion_TAPNET.digest(),
                     'len_chunks': len(chunks),
                     'paquete_id': id_objeto,
                     'cliente': cliente}
 
-            # crear el primer mensaje
             self.__comunicacion_TAPNET.send_package(NORMAL, data, '0.0.0.0', 9876)
             ack = self.__comunicacion_TAPNET.UDP_connection.recvfrom(self.buffer_size)
 
-            print("hemos recibido de vuelta el ack")
-            print(ack[0])
+            primer_mensaje_vuelta = self.__comunicacion_TAPNET.translate_package_to_data(ack[0])
 
-            primer_mensaje_vuelta = self.__comunicacion_TAPNET.translate_package_to_data([0])
-
-            print(primer_mensaje_vuelta)
 
             if primer_mensaje_vuelta['message_type'] == 0:
                 # envio mensaje
                 for i in range(0, len(chunks)):
                     chunk_a_enviar = chunks[i]
-                    print("chunk A ENVIAR")
-                    print(chunk_a_enviar)
                     self.__hasheador.update(chunk_a_enviar)
 
-                    self.data['paquete_id'] = 1
+                    self.data['paquete_id'] = id_objeto
                     self.data['subpackage_id'] = i
                     self.data['subpackage_num'] = len(chunks)
                     self.data['subpackage'] = chunk_a_enviar
                     self.data['subpackage_hash'] = self.__hasheador.digest()
 
-                    print("aqui estoy compraobando el subpackage id")
-                    print(self.data)
                     self.__comunicacion_TAPNET.send_package(NORMAL, self.data, '0.0.0.0', 9876)
 
-            # return self.__almacenGrande.guardar_paquete(objeto, client)
+            return id_objeto
 
     def recuperar_objeto(self, id_paquete, client):
         """
@@ -112,9 +102,28 @@ class Empresa:
             list_id_clientes.append(self.__clientes[i].get_id())
 
         object_to_return = self.__almacenPequeno.recuperar_paquete(id_paquete, client)
+
         if object_to_return is "no es este warehouse":
-            object_to_return = self.__almacenGrande.recuperar_paquete(id_paquete, client)
-        print(object_to_return)
+
+            datos_objeto = objeto
+            cliente = client.get_id()
+
+
+
+
+
+
+
+
+
+            object_to_return = self.__almacenGrande.recuperar_paquete(paquete, client)
+
+
+
+
+
+
+
         return object_to_return
 
     def alta_cliente(self, client):

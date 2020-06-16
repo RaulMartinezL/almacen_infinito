@@ -37,9 +37,6 @@ class TAPNet:
         self.UDP_connection.sendto(message, (ip, puerto))
 
     def normal_message(self, data):
-        for key, value in data.items():
-            print(key, value)
-
         if data['primer_mensaje'] is not None:
             # creamos el primer mensaje
             message = int(1).to_bytes(4, 'little') + data['paquete_id'].to_bytes(4, 'little') + \
@@ -72,18 +69,17 @@ class TAPNet:
     def translate_package_to_data(self, data):
         dict_to_return = {}
 
-        message_type = int.from_bytes(data[0:3], 'little')
-        paquete_id = int.from_bytes(data[4:7], 'little')
-
+        message_type = int.from_bytes(data[0:4], 'little')
+        paquete_id = int.from_bytes(data[4:8], 'little')
         # subpackage_id = int.from_bytes(data[8:11], 'little')
 
         if message_type == 1:
-            primer_mensaje = int.from_bytes(data[8:11], 'little')
+            primer_mensaje = int.from_bytes(data[8:12], 'little')
 
             # queremos guardar el paquete y este es el primer mensaje
             if primer_mensaje == 24:
-                len_chunks = int.from_bytes(data[12:15], 'little')
-                cliente = int.from_bytes(data[16:19], 'little')
+                len_chunks = int.from_bytes(data[12:16], 'little')
+                cliente = int.from_bytes(data[16:20], 'little')
                 # hash_chunks = int.from_bytes(data[20:], 'little')
                 hash_chunks = data[20:]
 
@@ -96,17 +92,26 @@ class TAPNet:
 
             # queremos sacar el paquete y este es el primer mensaje
             elif primer_mensaje == 42:
+                len_chunks = int.from_bytes(data[12:16], 'little')
+                cliente = int.from_bytes(data[16:20], 'little')
+                # hash_chunks = int.from_bytes(data[20:], 'little')
+                hash_chunks = data[20:]
+
                 dict_to_return['message_type'] = message_type
                 dict_to_return['paquete_id'] = paquete_id
+                dict_to_return['primer_mensaje'] = primer_mensaje
+                dict_to_return['hash_chunks'] = hash_chunks
+                dict_to_return['len_chunks'] = len_chunks
+                dict_to_return['cliente'] = cliente
 
             # comportamiento normal a partir del primer mensaje
             else:
-                subpackage_id = int.from_bytes(data[8:11], 'little')
-                subpackage_num = int.from_bytes(data[12:15], 'little')
+                subpackage_id = int.from_bytes(data[8:12], 'little')
+                subpackage_num = int.from_bytes(data[12:16], 'little')
                 # subpackage_hash = int.from_bytes(data[21:52], 'little')
                 subpackage_hash = data[16:48]
 
-                print(data)
+                # print(data)
                 subpackage = data[48:]
 
                 dict_to_return['message_type'] = message_type
@@ -122,10 +127,6 @@ class TAPNet:
             dict_to_return['paquete_id'] = paquete_id
 
         return dict_to_return
-
-    def guardar_objeto(self, paquete):
-
-        pass
 
     def recuperar_objet(self):
         pass

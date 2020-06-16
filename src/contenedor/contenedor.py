@@ -76,7 +76,7 @@ class Arena:
 
         return False
 
-    def __fetch_package(self, data_package, client):
+    def __fetch_package(self, id_paquete, client):
         """
         recorre la lista de pool los cuales tienen blocks (esta lista es self.__used_pools) hasta encontrar un pool
         donde class_idx sea la que estamos buscando.
@@ -91,7 +91,7 @@ class Arena:
             sys.exit("para buscar paquetes primero tienes que meter al menos uno")
 
         for i in range(0, len(self.__used_pools)):
-            package_to_return = self.__used_pools[i].get_package(data_package, client)
+            package_to_return = self.__used_pools[i].get_package(id_paquete, client)
             if package_to_return is not None:
                 return package_to_return
 
@@ -126,7 +126,7 @@ class Arena:
 
         return False
 
-    def add_package(self, package, client):
+    def add_package(self, package, client, id_paquete):
         """
         inserta un paquete en un block de un pool.
 
@@ -145,11 +145,11 @@ class Arena:
             return False
 
         # insertamos el paquete en el pool correspondiente
-        pool_where_insert.insert_block(package, client)
+        pool_where_insert.insert_block(package, client, id_paquete)
 
-        return True
+        return id_paquete
 
-    def get_package(self, data_package, client):
+    def get_package(self, id_paquete, client):
         """
 
         :param data_package:
@@ -157,7 +157,7 @@ class Arena:
         :return:
         """
 
-        return self.__fetch_package(data_package, client)
+        return self.__fetch_package(id_paquete, client)
 
 
 

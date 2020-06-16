@@ -60,7 +60,7 @@ class Pool:
         """
         return self.__class_idx
 
-    def insert_block(self, block_to_insert, client):
+    def insert_block(self, block_to_insert, client, id_paquete):
         """
         insertamos un paquete en el pool. en este todas las comprobacions del size del paquete y class_idx están hechas.
 
@@ -74,30 +74,30 @@ class Pool:
 
         for i in range(0, len(self.allocated_blocks)):
             if self.allocated_blocks[i].get_data() == block_to_insert:
-                self.allocated_blocks[i].set_data(block_to_insert, client)
+                self.allocated_blocks[i].set_data(block_to_insert, client, id_paquete)
                 return "añadido cliente a la lista "
 
         if len(self.__free_blocks) > 0:
             block24 = self.__free_blocks.pop()
-            block24.set_data(block_to_insert, client)
+            block24.set_data(block_to_insert, client, id_paquete)
             self.allocated_blocks.append(block24)
         else:
             block24 = self.__untouched_blocks.pop()
-            block24.set_data(block_to_insert, client)
+            block24.set_data(block_to_insert, client, id_paquete)
             self.allocated_blocks.append(block24)
 
-    def get_package(self, data_package, client):
+    def get_package(self, id_paquete, client):
         """
 
         """
 
         for i in range(0, len(self.allocated_blocks)):
             # obtenemos el dato del paquete que estamos buscando y la liste de dueños
-            data = self.allocated_blocks[i].get_data()
+            data = self.allocated_blocks[i].get_id_paquete()
             clients_id = self.allocated_blocks[i].get_clients_id()
 
             # si los datos que estamos buscando coinciden
-            if data == data_package:
+            if id_paquete in data:
                 # si el id del cliente que recibimos, está en la lista de dueños del paquete:
                 for z in range(0, len(clients_id)):
                     if client.get_id() == clients_id[z]:
