@@ -27,12 +27,14 @@ if __name__ == "__main__":
     objeto4 = "objeto4"
 
     jaja = empresa.guardar_objeto(objeto1, cliente1)
-    print(jaja)
     paquete = empresa.recuperar_objeto(jaja, cliente1)
-    print(paquete)
     # empresa.estado_almacenamiento("small")
 
-    # empresa.guardar_objeto(objeto2, cliente2)
+    id_paquete_grande1 = empresa.guardar_objeto(objeto2, cliente2)
+    # id_paquete_grande2 = empresa.guardar_objeto(objeto3, cliente2)
+    # id_paquete_grande3 = empresa.guardar_objeto(objeto4, cliente2)
+
+    empresa.recuperar_objeto(id_paquete_grande1, cliente2)
     # empresa.guardar_objeto(objeto3, cliente2)
     # empresa.guardar_objeto(objeto4, cliente2)
 

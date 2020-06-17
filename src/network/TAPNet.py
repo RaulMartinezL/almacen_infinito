@@ -40,11 +40,12 @@ class TAPNet:
         if data['primer_mensaje'] is not None:
             # creamos el primer mensaje
             message = int(1).to_bytes(4, 'little') + data['paquete_id'].to_bytes(4, 'little') + \
-                      data['primer_mensaje'].to_bytes(4, 'little')
-
+                      data['primer_mensaje'].to_bytes(4, 'little') # aqui tenemos que guardar el puto cliente pero se rompe
+            if data['primer_mensaje'] == 42:
+                message = message + data['cliente'].to_bytes(4, 'little')
             # si existe esta key en el diccionario quiere decir que vamos a guardar el paquete si no existe es que
             # vamos a sacar el paquete
-            if data['hash_chunks']:
+            if 'hash_chunks' in data:
                 message = message + data['len_chunks'].to_bytes(4, 'little') + data['cliente'].to_bytes(4, 'little') + \
                           data['hash_chunks']  # hash_chunks son bytes. Mide 32
 
@@ -92,16 +93,11 @@ class TAPNet:
 
             # queremos sacar el paquete y este es el primer mensaje
             elif primer_mensaje == 42:
-                len_chunks = int.from_bytes(data[12:16], 'little')
-                cliente = int.from_bytes(data[16:20], 'little')
-                # hash_chunks = int.from_bytes(data[20:], 'little')
-                hash_chunks = data[20:]
+                cliente = int.from_bytes(data[12:16], 'little')
 
                 dict_to_return['message_type'] = message_type
                 dict_to_return['paquete_id'] = paquete_id
                 dict_to_return['primer_mensaje'] = primer_mensaje
-                dict_to_return['hash_chunks'] = hash_chunks
-                dict_to_return['len_chunks'] = len_chunks
                 dict_to_return['cliente'] = cliente
 
             # comportamiento normal a partir del primer mensaje
@@ -127,26 +123,3 @@ class TAPNet:
             dict_to_return['paquete_id'] = paquete_id
 
         return dict_to_return
-
-    def recuperar_objet(self):
-        pass
-
-    '''
-    def guardar_paquete(self, paquete, cliente):
-        pass
-
-        # dividir los datos del paquete en un tamaño de maximo 2048 bits
-
-        data = [paquete.get_data()]
-        hasher = hashlib.sha256()
-        hasher.update(data)
-        chunks = [data[i:i + BUFFER_SIZE] for i in range(0, len(data), BUFFER_SIZE)]
-        client = socket(AF_INET, SOCK_DGRAM)
-        client.sendto(len(chunks).to_bytes(4, 'big'), (ip, port))
-
-        for c in chunks:
-            client.sendto(c, (ip, port))
-
-        # poder enviar paquetes garantizando que lleguen de forma integra, recepcionando un ACK
-
-    '''

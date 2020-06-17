@@ -71,6 +71,8 @@ class Empresa:
                     'paquete_id': id_objeto,
                     'cliente': cliente}
 
+            print(data)
+
             self.__comunicacion_TAPNET.send_package(NORMAL, data, '0.0.0.0', 9876)
             ack = self.__comunicacion_TAPNET.UDP_connection.recvfrom(self.buffer_size)
 
@@ -103,10 +105,23 @@ class Empresa:
 
         object_to_return = self.__almacenPequeno.recuperar_paquete(id_paquete, client)
 
-        if object_to_return is "no es este warehouse":
+        if object_to_return is None:
 
-            datos_objeto = objeto
+            print("RECUPERAMOS EL OBJETO")
             cliente = client.get_id()
+
+
+            # preparamos el primer mensaje para guardar un paquete
+            first_data = {'primer_mensaje': 42,
+                          'paquete_id': id_paquete,
+                          'cliente': cliente}
+
+            self.__comunicacion_TAPNET.send_package(NORMAL, first_data, '0.0.0.0', 9876)
+            ack = self.__comunicacion_TAPNET.UDP_connection.recvfrom(self.buffer_size)
+
+            primer_mensaje_vuelta = self.__comunicacion_TAPNET.translate_package_to_data(ack[0])
+
+            print(primer_mensaje_vuelta)
 
 
 

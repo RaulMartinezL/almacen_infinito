@@ -96,11 +96,16 @@ class Pool:
             data = self.allocated_blocks[i].get_id_paquete()
             clients_id = self.allocated_blocks[i].get_clients_id()
 
+            if isinstance(client, int):
+                id_del_cliente = client
+            else:
+                id_del_cliente = client.get_id()
+
             # si los datos que estamos buscando coinciden
             if id_paquete in data:
                 # si el id del cliente que recibimos, está en la lista de dueños del paquete:
                 for z in range(0, len(clients_id)):
-                    if client.get_id() == clients_id[z]:
+                    if id_del_cliente == clients_id[z]:
                         package_to_return = self.allocated_blocks.pop(i)
                         package_to_return.delete_owners()
                         self.__free_blocks.append(package_to_return)

@@ -35,7 +35,7 @@ class Big_almacen:
         # nuestro paquete, asique creamos un contenedor nuevo y volvemos a llamar a esta misma funcion.
         self.__create__container()
 
-        return self.guardar_paquete(package, cliente)
+        return self.guardar_paquete(package, cliente, package_id)
 
     def recuperar_paquete(self, id_paquete, client):
         """

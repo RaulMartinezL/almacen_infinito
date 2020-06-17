@@ -43,44 +43,44 @@ class Remote_almacen:
 
 
         for i in range(0, len_chunks):
-            j = 0
-            while j <= 3:
 
-                data, address = self.connection.UDP_connection.recvfrom(self.buffer_size)
-                data_translated = self.connection.translate_package_to_data(data)
+            data, address = self.connection.UDP_connection.recvfrom(self.buffer_size)
+            data_translated = self.connection.translate_package_to_data(data)
 
-                package_id = data_translated['paquete_id']
-                subpackage_id = data_translated['subpackage_id']
-                subpackage_num = data_translated['subpackage_num']
-                subpackage_hash = data_translated['subpackage_hash']
-                subpackage = data_translated['subpackage']
+            print(data_translated)
+            package_id = data_translated['paquete_id']
+            subpackage_id = data_translated['subpackage_id']
+            subpackage_num = data_translated['subpackage_num']
+            subpackage_hash = data_translated['subpackage_hash']
+            subpackage = data_translated['subpackage']
 
-                # verificar mediante SHA256 que los datos recibidos son los que nos han enviado
-                self.__hasheador.update(subpackage)
-                check_subpackage = self.__hasheador.digest()
+            # verificar mediante SHA256 que los datos recibidos son los que nos han enviado
+            self.__hasheador.update(subpackage)
+            check_subpackage = self.__hasheador.digest()
 
-                if subpackage_hash == check_subpackage:
-                    # si hemos recibido bien el subpackage
-                    self.lista_paquetes.append(subpackage)
-                    self.lista_paquetes_hash.append(subpackage_hash)
-                    #actualizamos el hash de todos los paquetes con el nuevo que nos acaba de llegar
-                    hash_entero = b''.join(self.lista_paquetes_hash)
 
-                    print(hash_chunks)
-                    print(hash_entero)
-                    if hash_chunks == hash_entero:
-                        # guardamos el paquete
-                        paquete_in_bytes = b''.join(self.lista_paquetes)
-                        paquete = paquete_in_bytes.decode("utf-8")
-                        print("guardamos en el almacen")
-                        print(paquete)
-                        print(cliente)
-                        self.__almacenGrande.guardar_paquete(paquete, cliente, package_id)
-                        hash_entero = bytearray()
-                        break
+            print(check_subpackage)
+            print(subpackage_hash)
 
-                    j += 1
-                    break
+            if subpackage_hash == check_subpackage:
+                # si hemos recibido bien el subpackage
+                self.lista_paquetes.append(subpackage)
+                self.lista_paquetes_hash.append(subpackage_hash)
+                #actualizamos el hash de todos los paquetes con el nuevo que nos acaba de llegar
+                hash_entero = b''.join(self.lista_paquetes_hash)
+
+
+                print(hash_chunks)
+                print(hash_entero)
+                if hash_chunks == hash_entero:
+                    # guardamos el paquete
+                    paquete_in_bytes = b''.join(self.lista_paquetes)
+                    paquete = paquete_in_bytes.decode("utf-8")
+                    print("guardamos en el almacen")
+                    print(paquete)
+                    print(cliente)
+                    return self.__almacenGrande.guardar_paquete(paquete, cliente, package_id)
+
 
 
 
@@ -89,10 +89,15 @@ class Remote_almacen:
 
 
 
+        print(data_translated)
+
+        id_paquete = data_translated['paquete_id']
+        cliente = data_translated['cliente']
 
 
+        object_to_return = self.__almacenGrande.recuperar_paquete(id_paquete, cliente)
 
-        object_to_return = self.__almacenGrande.recuperar_paquete(id, cliente)
+        print(object_to_return)
 
     def run(self):
 
@@ -104,9 +109,13 @@ class Remote_almacen:
             # hay que comprobar que es lo que queremos hacer. Guardar o Recoger un paquete.
             data_translated = self.connection.translate_package_to_data(data)
 
+
+            print(data_translated)
+
             if data_translated['primer_mensaje'] == 24:
                 print("primer mensaje 24")
                 self.guardar_paquete(data_translated)
+
 
             if data_translated['primer_mensaje'] == 42:
                 self.recoger_paquete(data_translated)

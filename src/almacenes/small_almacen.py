@@ -49,10 +49,7 @@ class Small_almacen:
         for i in range(0, len(self.__used_containers)):
             paquete = self.__used_containers[i].get_package(id_paquete, client)
 
-        if paquete is None:
-            return "no es este warehouse"
-        else:
-            return paquete
+        return paquete
 
     def status(self):
         """
