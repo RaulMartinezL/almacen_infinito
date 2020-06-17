@@ -73,8 +73,6 @@ class Empresa:
                     'paquete_id': id_paquete,
                     'cliente': cliente}
 
-            print(data)
-
             self.__comunicacion_TAPNET.send_package(NORMAL, data, '0.0.0.0', 9876)
             ack = self.__comunicacion_TAPNET.UDP_connection.recvfrom(self.buffer_size)
 
@@ -84,8 +82,6 @@ class Empresa:
                 # envio mensaje
                 for i in range(0, len(chunks)):
                     chunk_a_enviar = chunks[i]
-                    print("CHUNK A ENVIUAR")
-                    print(chunk_a_enviar)
                     self.__hasheador.update(chunk_a_enviar)
 
                     self.data['paquete_id'] = id_paquete
@@ -93,8 +89,6 @@ class Empresa:
                     self.data['subpackage_num'] = len(chunks)
                     self.data['subpackage'] = chunk_a_enviar
                     self.data['subpackage_hash'] = self.__hasheador.digest()
-
-                    print(self.data['subpackage_hash'])
 
                     self.__comunicacion_TAPNET.send_package(NORMAL, self.data, '0.0.0.0', 9876)
 

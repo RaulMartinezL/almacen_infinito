@@ -37,8 +37,8 @@ if __name__ == "__main__":
     objeto_recuperado = empresa.recuperar_objeto(id_paquete_grande1, cliente2)
 
     print("estamos en el main")
-    print(objeto_recuperado)
-    print(objeto2)
+    print(type(objeto_recuperado))
+    print(type(objeto2))
     # empresa.guardar_objeto(objeto3, cliente2)
     # empresa.guardar_objeto(objeto4, cliente2)
 
@@ -48,22 +48,4 @@ if __name__ == "__main__":
     # lol = empresa.recuperar_objeto(objeto1, cliente1)
     # empresa.estado_almacenamiento("small")
     # empresa.estado_almacenamiento("big")
-
-    '''
-
-    uno = uuid1()
-    dos =  uuid4()
-    tres =  uuid4()
-    cuatro =  uuid4()
-    cinco =  uuid4()
-
-    print(type(uno))
-    print(dos)
-    print(tres)
-    print(cuatro)
-    print(cinco)
-
-    print(len(str.encode(str(uno))))
-    
-    '''
 

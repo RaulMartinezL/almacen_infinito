@@ -69,10 +69,6 @@ class TAPNet:
 
     def translate_package_to_data(self, data):
         dict_to_return = {}
-
-        print("estamos traduciendo los bytes que es data")
-        print(data)
-
         message_type = int.from_bytes(data[0:4], 'little')
         paquete_id = int.from_bytes(data[4:8], 'little')
         # subpackage_id = int.from_bytes(data[8:11], 'little')

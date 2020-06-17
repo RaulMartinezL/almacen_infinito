@@ -46,7 +46,6 @@ class Remote_almacen:
             data, address = self.connection.UDP_connection.recvfrom(self.buffer_size)
             data_translated = self.connection.translate_package_to_data(data)
 
-            print(data_translated)
             package_id = data_translated['paquete_id']
             subpackage_id = data_translated['subpackage_id']
             subpackage_num = data_translated['subpackage_num']
@@ -111,7 +110,7 @@ class Remote_almacen:
     def run(self):
 
         while 1:
-            print("estamos bien ")
+            print("esperando un mensaje")
             # recibimos un paquete del cliente
             data, address = self.connection.UDP_connection.recvfrom(self.buffer_size)
 
@@ -125,8 +124,7 @@ class Remote_almacen:
 
 
             if data_translated['primer_mensaje'] == 42:
-
-
+                print("primer mensaje 42")
                 self.recoger_paquete(data_translated)
 
 
