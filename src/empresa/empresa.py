@@ -8,7 +8,6 @@ from uuid import uuid4
 import hashlib
 import random
 
-
 ACK = 0
 NORMAL = 1
 
@@ -39,6 +38,9 @@ class Empresa:
 
         self.__hasheador = hashlib.sha256()
 
+        self.lista_paquetes = []
+        self.lista_paquetes_hash = []
+
     def guardar_objeto(self, objeto, client):
         """
 
@@ -59,7 +61,7 @@ class Empresa:
             # miramos los datos
             datos_objeto = objeto
             cliente = client.get_id()
-            id_objeto = random.getrandbits(32)
+            id_paquete = random.getrandbits(32)
 
             # dividimos en chunks de 2048 bits
             chunks = self.__comunicacion_TAPNET.make_chunks(datos_objeto)
@@ -68,7 +70,7 @@ class Empresa:
             data = {'primer_mensaje': 24,
                     'hash_chunks': self.__comunicacion_TAPNET.digest(),
                     'len_chunks': len(chunks),
-                    'paquete_id': id_objeto,
+                    'paquete_id': id_paquete,
                     'cliente': cliente}
 
             print(data)
@@ -78,22 +80,25 @@ class Empresa:
 
             primer_mensaje_vuelta = self.__comunicacion_TAPNET.translate_package_to_data(ack[0])
 
-
             if primer_mensaje_vuelta['message_type'] == 0:
                 # envio mensaje
                 for i in range(0, len(chunks)):
                     chunk_a_enviar = chunks[i]
+                    print("CHUNK A ENVIUAR")
+                    print(chunk_a_enviar)
                     self.__hasheador.update(chunk_a_enviar)
 
-                    self.data['paquete_id'] = id_objeto
+                    self.data['paquete_id'] = id_paquete
                     self.data['subpackage_id'] = i
                     self.data['subpackage_num'] = len(chunks)
                     self.data['subpackage'] = chunk_a_enviar
                     self.data['subpackage_hash'] = self.__hasheador.digest()
 
+                    print(self.data['subpackage_hash'])
+
                     self.__comunicacion_TAPNET.send_package(NORMAL, self.data, '0.0.0.0', 9876)
 
-            return id_objeto
+            return id_paquete
 
     def recuperar_objeto(self, id_paquete, client):
         """
@@ -106,40 +111,54 @@ class Empresa:
         object_to_return = self.__almacenPequeno.recuperar_paquete(id_paquete, client)
 
         if object_to_return is None:
-
-            print("RECUPERAMOS EL OBJETO")
             cliente = client.get_id()
 
-
-            # preparamos el primer mensaje para guardar un paquete
+            # preparamos el primer mensaje para recoger un paquete
             first_data = {'primer_mensaje': 42,
                           'paquete_id': id_paquete,
                           'cliente': cliente}
 
             self.__comunicacion_TAPNET.send_package(NORMAL, first_data, '0.0.0.0', 9876)
-            ack = self.__comunicacion_TAPNET.UDP_connection.recvfrom(self.buffer_size)
 
-            primer_mensaje_vuelta = self.__comunicacion_TAPNET.translate_package_to_data(ack[0])
+            primer_mensaje_vuelta = self.__comunicacion_TAPNET.UDP_connection.recvfrom(self.buffer_size)
+            primer_mensaje_traducido = self.__comunicacion_TAPNET.translate_package_to_data(primer_mensaje_vuelta[0])
 
-            print(primer_mensaje_vuelta)
+            if primer_mensaje_traducido['primer_mensaje'] == 24:
+                self.__comunicacion_TAPNET.send_package(ACK, primer_mensaje_traducido, '0.0.0.0', 9876)
 
+                hash_chunks = primer_mensaje_traducido['hash_chunks']
+                len_chunks = primer_mensaje_traducido['len_chunks']
+                id_paquete = primer_mensaje_traducido['paquete_id']
+                cliente = primer_mensaje_traducido['cliente']
 
+                for i in range(0, len_chunks):
+                    data, address = self.__comunicacion_TAPNET.UDP_connection.recvfrom(self.buffer_size)
+                    data_translated = self.__comunicacion_TAPNET.translate_package_to_data(data)
 
+                    package_id = data_translated['paquete_id']
+                    subpackage_id = data_translated['subpackage_id']
+                    subpackage_num = data_translated['subpackage_num']
+                    subpackage_hash = data_translated['subpackage_hash']
+                    subpackage = data_translated['subpackage']
 
+                    # verificar mediante SHA256 que los datos recibidos son los que nos han enviado
+                    hasheador_bueno = hashlib.sha256()
+                    hasheador_bueno.update(b'objeto2')
+                    check_subpackage = hasheador_bueno.digest()
 
+                    if subpackage_hash == check_subpackage:
+                        # si hemos recibido bien el subpackage
+                        self.lista_paquetes.append(subpackage)
+                        self.lista_paquetes_hash.append(subpackage_hash)
+                        # actualizamos el hash de todos los paquetes con el nuevo que nos acaba de llegar
+                        hash_entero = b''.join(self.lista_paquetes_hash)
+                        if hash_chunks == hash_entero:
+                            # guardamos el paquete
+                            paquete_in_bytes = b''.join(self.lista_paquetes)
+                            paquete = paquete_in_bytes.decode("utf-8")
+                            return paquete
 
-
-
-
-            object_to_return = self.__almacenGrande.recuperar_paquete(paquete, client)
-
-
-
-
-
-
-
-        return object_to_return
+        return None
 
     def alta_cliente(self, client):
         """

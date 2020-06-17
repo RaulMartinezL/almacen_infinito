@@ -36,8 +36,7 @@ class Remote_almacen:
         id_paquete = data['paquete_id']
         cliente = data['cliente']
 
-        ack = self.connection.ack_message(data)
-        self.connection.UDP_connection.sendto(ack, ('0.0.0.0', 9877))
+        self.connection.send_package(ACK, data, '0.0.0.0', 9877)
 
         # falta comprobar el numero de subpaquetes que nos van a enviar
 
@@ -55,8 +54,9 @@ class Remote_almacen:
             subpackage = data_translated['subpackage']
 
             # verificar mediante SHA256 que los datos recibidos son los que nos han enviado
-            self.__hasheador.update(subpackage)
-            check_subpackage = self.__hasheador.digest()
+            hasheador_chido = hashlib.sha256()
+            hasheador_chido.update(subpackage)
+            check_subpackage = hasheador_chido.digest()
 
 
             print(check_subpackage)
@@ -87,22 +87,60 @@ class Remote_almacen:
     def recoger_paquete(self, data_translated):
 
 
-
-
-        print(data_translated)
+        print("RECOGMEOS EL APQUETE")
 
         id_paquete = data_translated['paquete_id']
         cliente = data_translated['cliente']
 
-
         object_to_return = self.__almacenGrande.recuperar_paquete(id_paquete, cliente)
 
+        # dividimos en chunks de 2048 bits
+        print("vamos a ver que estoy encriptando")
+        chunks_to_return = self.connection.make_chunks(object_to_return)
+
+        print(chunks_to_return)
+
+        data = {'primer_mensaje': 24,
+                'hash_chunks': self.connection.digest(),
+                'len_chunks': len(chunks_to_return),
+                'paquete_id': id_paquete,
+                'cliente': cliente}
+
         print(object_to_return)
+
+        print(data)
+        self.connection.send_package(NORMAL, data, '0.0.0.0', 9877)
+        ack = self.connection.UDP_connection.recvfrom(self.buffer_size)
+
+        primer_mensaje_vuelta = self.connection.translate_package_to_data(ack[0])
+
+        if primer_mensaje_vuelta['message_type'] == 0:
+            # envio mensaje
+            data_to_return = {}
+            for i in range(0, len(chunks_to_return)):
+                chunk_a_enviar = chunks_to_return[i]
+                print("debugeamos chunk a enviar")
+                print(chunk_a_enviar)
+                self.__hasheador.update(chunk_a_enviar)
+
+                data_to_return['paquete_id'] = id_paquete
+                data_to_return['subpackage_id'] = i
+                data_to_return['subpackage_num'] = len(chunks_to_return)
+                data_to_return['subpackage'] = chunk_a_enviar
+                data_to_return['subpackage_hash'] = self.__hasheador.digest()
+
+                print(data_to_return['subpackage_hash'])
+
+                print("CASI LO TENEMOS")
+                print(data_to_return)
+                self.connection.send_package(NORMAL, data_to_return, '0.0.0.0', 9877)
+
+
 
     def run(self):
 
         while 1:
-            print("estmos bien ")
+            print("estamos bien ")
             # recibimos un paquete del cliente
             data, address = self.connection.UDP_connection.recvfrom(self.buffer_size)
 
@@ -110,14 +148,14 @@ class Remote_almacen:
             data_translated = self.connection.translate_package_to_data(data)
 
 
-            print(data_translated)
-
             if data_translated['primer_mensaje'] == 24:
                 print("primer mensaje 24")
                 self.guardar_paquete(data_translated)
 
 
             if data_translated['primer_mensaje'] == 42:
+
+
                 self.recoger_paquete(data_translated)
 
 

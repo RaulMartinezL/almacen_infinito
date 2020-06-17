@@ -37,7 +37,7 @@ class TAPNet:
         self.UDP_connection.sendto(message, (ip, puerto))
 
     def normal_message(self, data):
-        if data['primer_mensaje'] is not None:
+        if 'primer_mensaje' in data and data['primer_mensaje'] is not None:
             # creamos el primer mensaje
             message = int(1).to_bytes(4, 'little') + data['paquete_id'].to_bytes(4, 'little') + \
                       data['primer_mensaje'].to_bytes(4, 'little') # aqui tenemos que guardar el puto cliente pero se rompe
@@ -69,6 +69,9 @@ class TAPNet:
 
     def translate_package_to_data(self, data):
         dict_to_return = {}
+
+        print("estamos traduciendo los bytes que es data")
+        print(data)
 
         message_type = int.from_bytes(data[0:4], 'little')
         paquete_id = int.from_bytes(data[4:8], 'little')

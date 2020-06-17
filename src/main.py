@@ -34,7 +34,11 @@ if __name__ == "__main__":
     # id_paquete_grande2 = empresa.guardar_objeto(objeto3, cliente2)
     # id_paquete_grande3 = empresa.guardar_objeto(objeto4, cliente2)
 
-    empresa.recuperar_objeto(id_paquete_grande1, cliente2)
+    objeto_recuperado = empresa.recuperar_objeto(id_paquete_grande1, cliente2)
+
+    print("estamos en el main")
+    print(objeto_recuperado)
+    print(objeto2)
     # empresa.guardar_objeto(objeto3, cliente2)
     # empresa.guardar_objeto(objeto4, cliente2)
 
