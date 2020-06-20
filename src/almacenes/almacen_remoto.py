@@ -129,6 +129,8 @@ class Remote_almacen:
 
 
 
+
+
 if __name__ == '__main__':
     ip = '0.0.0.0'
     port = 9876

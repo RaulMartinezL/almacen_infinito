@@ -26,6 +26,7 @@ class Empresa:
         self.max_tries = 3
         self.__comunicacion_TAPNET = TAPNet(self.ip, self.port, self.buffer_size, self.time_out, self.max_tries)
 
+
         self.__almacenGrande = Big_almacen()
         self.__almacenPequeno = Small_almacen()
         self.data = {"paquete_id": None,
@@ -81,6 +82,7 @@ class Empresa:
             if primer_mensaje_vuelta['message_type'] == 0:
                 # envio mensaje
                 for i in range(0, len(chunks)):
+
                     chunk_a_enviar = chunks[i]
                     self.__hasheador.update(chunk_a_enviar)
 
@@ -91,6 +93,7 @@ class Empresa:
                     self.data['subpackage_hash'] = self.__hasheador.digest()
 
                     self.__comunicacion_TAPNET.send_package(NORMAL, self.data, '0.0.0.0', 9876)
+
 
             return id_paquete
 
