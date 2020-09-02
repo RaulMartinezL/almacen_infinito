@@ -15,6 +15,8 @@ pipeline{
         stage('Test'){
             steps{
                 sh  '''#!bin/bash
+                    pytests --contunue-on-collection-errors tests/test.py
+                    
                     pytests --continue-on-collection-errors --cov-report xml --cov=aa_scoring tests/ || [[ $? -eq 1 ]]
                     '''
             }
