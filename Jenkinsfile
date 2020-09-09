@@ -1,8 +1,6 @@
 pipeline{
     agent{
-        kubernetes{
-            defaultContainer 'python'
-        }
+        any
     }
     stages{
         stage('Build'){
