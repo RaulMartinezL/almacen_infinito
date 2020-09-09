@@ -6,5 +6,15 @@ pipeline {
                 echo 'Hello [pruebas!' 
             }
         }
+        stage('prueba') {
+            steps {
+                    '''#!bin/bash
+                    docker-compose up
+                    '''
+            }
+        }
     }
 }
+
+
+'
