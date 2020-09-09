@@ -8,8 +8,8 @@ pipeline {
         }
         stage('prueba') {
             steps {
-                    sh '''#!bin/bash
-                    docker-compose up
+                sh  '''#!bin/bash
+                    ls
                     '''
             }
         }
