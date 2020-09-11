@@ -8,9 +8,7 @@ pipeline {
         }
         stage('prueba') {
             steps {
-                sh  '''#!bin/bash
-                    ls
-                    '''
+                sh 'ls'
             }
         }
     }
